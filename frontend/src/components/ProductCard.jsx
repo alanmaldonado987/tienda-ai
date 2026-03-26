@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '#000000');
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || 'Único');
   const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, triggerFlyingProduct } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const inWishlist = isInWishlist(product.id);
@@ -24,6 +24,14 @@ export default function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    // Obtener posición del click para la animación
+    const rect = e.currentTarget.getBoundingClientRect();
+    triggerFlyingProduct({
+      startX: rect.left + rect.width / 2,
+      startY: rect.top + rect.height / 2,
+      image: product.image,
+      name: product.name
+    });
     addToCart(product, selectedSize, selectedColor);
     setShowQuickAdd(false);
   };

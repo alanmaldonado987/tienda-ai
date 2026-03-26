@@ -16,7 +16,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   
-  const { addToCart } = useCart();
+  const { addToCart, triggerFlyingProduct } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -49,11 +49,19 @@ export default function ProductDetail() {
     }).format(price);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
     if (!selectedSize) {
       alert('Por favor selecciona una talla');
       return;
     }
+    // Animación de vuelo al carrito
+    const rect = e.currentTarget.getBoundingClientRect();
+    triggerFlyingProduct({
+      startX: rect.left + rect.width / 2,
+      startY: rect.top + rect.height / 2,
+      image: product.image,
+      name: product.name
+    });
     addToCart(product, selectedSize, selectedColor, quantity);
   };
 

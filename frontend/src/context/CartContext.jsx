@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { cartAPI } from '../services/api';
 import { useAuth } from './AuthContext';
 
@@ -9,6 +9,7 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [flyingProduct, setFlyingProduct] = useState(null);
 
   // Cargar carrito de la API cuando el usuario inicia sesión
   useEffect(() => {
@@ -43,6 +44,15 @@ export function CartProvider({ children }) {
     }
   };
 
+  // Función para iniciar la animación de vuelo al carrito
+  const triggerFlyingProduct = (productInfo) => {
+    setFlyingProduct(productInfo);
+    // Limpiar después de la animación
+    setTimeout(() => {
+      setFlyingProduct(null);
+    }, 1000);
+  };
+
   const addToCart = async (product, size, color, quantity = 1) => {
     if (!user) {
       // Sin usuario, guardar en localStorage
@@ -59,7 +69,6 @@ export function CartProvider({ children }) {
         }
         return [...prev, { ...product, size, color, quantity }];
       });
-      setIsCartOpen(true);
       return;
     }
 
@@ -71,7 +80,6 @@ export function CartProvider({ children }) {
         selectedColor: color
       });
       setCart(response.data.data.items || []);
-      setIsCartOpen(true);
     } catch (err) {
       console.error('Error adding to cart:', err);
     }
@@ -161,7 +169,9 @@ export function CartProvider({ children }) {
         cartCount,
         isCartOpen,
         setIsCartOpen,
-        refreshCart: fetchCart
+        refreshCart: fetchCart,
+        flyingProduct,
+        triggerFlyingProduct
       }}
     >
       {children}

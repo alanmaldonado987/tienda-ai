@@ -9,6 +9,7 @@ import Banner from './components/Banner'
 import ProductGrid from './components/ProductGrid'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
+import FlyingProduct from './components/FlyingProduct'
 import Auth from './components/Auth'
 import ProductDetail from './components/ProductDetail'
 import WishlistPage from './components/WishlistPage'
@@ -78,6 +79,7 @@ function App() {
                 </div>
               } />
             </Routes>
+              <FlyingProduct />
             </CartProvider>
           </WishlistProvider>
         </AuthProvider>
