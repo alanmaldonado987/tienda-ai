@@ -3,33 +3,38 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const fs = require('fs');
+const path = require('path');
 
-// Inicializar Gemini con la API key del usuario
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
-
-// Contexto del asistente
-const systemPrompt = `
-Eres el asistente virtual de MODACOLOMBIA, una tienda de ropa en línea de Colombia.
-
-Información importante:
-- Envío gratis en pedidos mayores a $150.000
-- Tiempo de entrega: 3-5 días hábiles a todo Colombia
-- Tienes 5 días para cambios y devoluciones
-- Métodos de pago: Tarjetas de crédito/débito, transferencia, efectivo en puntos de pago
-- Horario de atención: Lunes a Viernes 8am-6pm, Sábados 9am-5pm
+// Cargar system prompt desde archivo
+let systemPrompt = '';
+const promptPath = path.join(__dirname, '../../system-prompt.md');
+try {
+  systemPrompt = fs.readFileSync(promptPath, 'utf-8');
+} catch (error) {
+  console.log('⚠️ No se encontró system-prompt.md, usando fallback');
+  systemPrompt = `Eres Sofía, asistente virtual de MODACOLOMBIA, tienda de ropa en línea de Colombia.
+Información clave:
+- Envío gratis pedidos mayores a $150.000
+- Tiempo entrega: 3-5 días hábiles
+- 5 días para devoluciones
+- Métodos: tarjetas, transferencia, efectivo
 - WhatsApp: 300-XXX-XXXX
 - Email: atencion@modacolombia.com
+- Horario: L-V 8am-6pm, Sábados 9am-5pm
 
-Tu rol es:
-1. Ayudar a clientes con preguntas sobre productos, envíos, devoluciones, pagos
-2. Ser amable, profesional y conciso
-3. Dar respuestas breves y útiles
-4. Si no sabes algo, admitirlo y ofrecer ayudar de otra forma
+Responde siempre en español, de manera amable y útil. Sé concisa y servicial.`;
+}
 
-Responde siempre en español y de manera útil.
-`;
+// Inicializar Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ 
+  model: 'gemini-1.0-pro',
+  generationConfig: {
+    temperature: 0.7,
+    maxOutputTokens: 500,
+  }
+});
 
 /**
  * POST /api/support/chat - Chat con el bot de soporte (Gemini AI)
@@ -45,22 +50,14 @@ router.post('/chat', async (req, res) => {
       });
     }
 
-    // Crear chat con contexto
+    // Crear chat con el system prompt integrado
     const chat = model.startChat({
       history: [
         {
           role: 'user',
           parts: [{ text: systemPrompt }]
-        },
-        {
-          role: 'model',
-          parts: [{ text: 'Entendido. Soy el asistente virtual de MODACOLOMBIA. ¿En qué puedo ayudarte hoy?' }]
         }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 500,
-      },
+      ]
     });
 
     // Enviar mensaje y obtener respuesta
@@ -76,9 +73,8 @@ router.post('/chat', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error en chat de soporte (Gemini):', error);
+    console.error('Error en chat de soporte (Gemini):', error.message);
     
-    // Si falla Gemini, responder con mensaje de error amigable
     res.json({
       success: true,
       data: {
@@ -121,8 +117,6 @@ router.get('/topics', async (req, res) => {
  */
 router.post('/feedback', async (req, res) => {
   try {
-    const { messageId, rating, comment } = req.body;
-    
     res.json({
       success: true,
       message: '¡Gracias por tu feedback!'
