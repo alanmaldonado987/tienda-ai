@@ -20,17 +20,20 @@ export default function Header() {
     const updatePosition = () => {
       if (cartButtonRef.current) {
         const rect = cartButtonRef.current.getBoundingClientRect();
-        setCartButtonPosition({
+        const newPos = {
           x: rect.left + rect.width / 2,
           y: rect.top + rect.height / 2
-        });
+        };
+        setCartButtonPosition(newPos);
       }
     };
 
-    updatePosition();
+    // Ejecutar después del mount para asegurar que el DOM esté listo
+    setTimeout(updatePosition, 100);
+    // También ejecutar cuando el layout cambie
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [setCartButtonPosition]);
+  }, [setCartButtonPosition, mobileMenuOpen]);
 
   const menuItems = [
     'Novedades',
