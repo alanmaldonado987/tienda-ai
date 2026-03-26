@@ -13,8 +13,8 @@ export default function FlyingProduct() {
       setIsAnimating(true);
 
       // Posición objetivo: el botón del carrito en el header
-      const targetX = cartButtonPosition.x || window.innerWidth - 80;
-      const targetY = cartButtonPosition.y || 100;
+      const targetX = cartButtonPosition?.x || window.innerWidth - 80;
+      const targetY = cartButtonPosition?.y || 100;
 
       // Animación de vuelo
       const duration = 600;
