@@ -53,6 +53,24 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = async (product, size, color, quantity = 1) => {
+    // Verificar si el producto ya existe en el carrito para mostrar advertencia
+    const existingItem = cart.find(
+      item => item.id === product.id && item.selectedSize === size && item.selectedColor === color
+    );
+    
+    if (existingItem && existingItem.quantity > 1) {
+      // Mostrar advertencia
+      const confirmed = window.confirm(
+        `Ya tienes ${existingItem.quantity} unidades de este producto en tu carrito.\n\n` +
+        `Si eliminas este producto del carrito, se eliminarán todas las ${existingItem.quantity} unidades.\n\n` +
+        `¿Deseas agregar ${quantity} más?`
+      );
+      
+      if (!confirmed) {
+        return; // El usuario canceló
+      }
+    }
+
     if (!user) {
       // Sin usuario, guardar en localStorage
       setCart(prev => {
@@ -85,6 +103,23 @@ export function CartProvider({ children }) {
   };
 
   const removeFromCart = async (productId, size, color) => {
+    // Verificar si el producto tiene más de 1 unidad
+    const item = cart.find(
+      i => i.id === productId && i.selectedSize === size && i.selectedColor === color
+    );
+    
+    if (item && item.quantity > 1) {
+      const confirmed = window.confirm(
+        `Este producto tiene ${item.quantity} unidades en tu carrito.\n\n` +
+        `Si continúas, se eliminarán las ${item.quantity} unidades.\n\n` +
+        ¿Deseas eliminar todas las unidades?`
+      );
+      
+      if (!confirmed) {
+        return; // El usuario canceló
+      }
+    }
+
     if (!user) {
       setCart(prev =>
         prev.filter(
