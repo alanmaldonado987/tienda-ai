@@ -210,6 +210,7 @@ export default function Header() {
             {/* Cart */}
             <button
               ref={cartButtonRef}
+              data-cart-button
               onClick={() => setIsCartOpen(true)}
               className="p-2 hover:bg-naf-light-gray rounded-full transition-colors relative"
             >

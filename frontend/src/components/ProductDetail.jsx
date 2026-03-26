@@ -56,12 +56,21 @@ export default function ProductDetail() {
     }
     // Animación de vuelo al carrito
     const rect = e.currentTarget.getBoundingClientRect();
+    // Obtener posición del botón del carrito
+    const cartButton = document.querySelector('[data-cart-button]');
+    const targetPosition = cartButton 
+      ? { 
+          x: cartButton.getBoundingClientRect().left + cartButton.getBoundingClientRect().width / 2,
+          y: cartButton.getBoundingClientRect().top + cartButton.getBoundingClientRect().height / 2
+        }
+      : null;
+    
     triggerFlyingProduct({
       startX: rect.left + rect.width / 2,
       startY: rect.top + rect.height / 2,
       image: product.image,
       name: product.name
-    });
+    }, targetPosition);
     addToCart(product, selectedSize, selectedColor, quantity);
   };
 

@@ -9,8 +9,6 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [flyingProduct, setFlyingProduct] = useState(null);
-  const [cartButtonPosition, setCartButtonPosition] = useState({ x: 0, y: 0 });
 
   // Cargar carrito de la API cuando el usuario inicia sesión
   useEffect(() => {
@@ -46,8 +44,12 @@ export function CartProvider({ children }) {
   };
 
   // Función para iniciar la animación de vuelo al carrito
-  const triggerFlyingProduct = (productInfo) => {
-    setFlyingProduct(productInfo);
+  const triggerFlyingProduct = (productInfo, targetPosition) => {
+    setFlyingProduct({
+      ...productInfo,
+      targetX: targetPosition?.x || 0,
+      targetY: targetPosition?.y || 0
+    });
     // Limpiar después de la animación
     setTimeout(() => {
       setFlyingProduct(null);
@@ -171,9 +173,7 @@ export function CartProvider({ children }) {
         isCartOpen,
         setIsCartOpen,
         refreshCart: fetchCart,
-        flyingProduct,
-        triggerFlyingProduct,
-        setCartButtonPosition
+        triggerFlyingProduct
       }}
     >
       {children}

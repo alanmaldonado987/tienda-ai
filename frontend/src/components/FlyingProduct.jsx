@@ -1,40 +1,29 @@
 import { useEffect, useState, useRef } from 'react';
-import { useCart } from '../context/CartContext';
 
 export default function FlyingProduct() {
-  const { flyingProduct, cartButtonPosition } = useCart();
-  const positionRef = useRef({ x: 0, y: 0 });
+  const [flyingProduct, setFlyingProduct] = useState(null);
   const [position, setPosition] = useState({ x: 0, y: 0, opacity: 1 });
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Guardar la posición del carrito cuando cambie
+  // Escuchar eventos de flying product
   useEffect(() => {
-    console.log('cartButtonPosition updated:', cartButtonPosition);
-    if (cartButtonPosition?.x && cartButtonPosition?.y) {
-      positionRef.current = { 
-        x: cartButtonPosition.x, 
-        y: cartButtonPosition.y 
-      };
-      console.log('positionRef updated:', positionRef.current);
-    }
-  }, [cartButtonPosition]);
+    const handleFlyingProduct = (event) => {
+      const { productInfo, targetPosition } = event.detail;
+      setFlyingProduct({ ...productInfo, targetX: targetPosition.x, targetY: targetPosition.y });
+    };
+    
+    window.addEventListener('triggerFlyingProduct', handleFlyingProduct);
+    return () => window.removeEventListener('triggerFlyingProduct', handleFlyingProduct);
+  }, []);
 
   useEffect(() => {
-    if (!flyingProduct) return;
-
-    // Usar la posición actual del ref
-    const targetX = positionRef.current.x;
-    const targetY = positionRef.current.y;
-
-    // Si no tenemos posición válida, no animamos
-    if (!targetX || !targetY) {
-      console.log('No cart position available');
-      return;
-    }
+    if (!flyingProduct || !flyingProduct.targetX) return;
 
     setPosition({ x: flyingProduct.startX, y: flyingProduct.startY, opacity: 1 });
     setIsAnimating(true);
 
+    const targetX = flyingProduct.targetX;
+    const targetY = flyingProduct.targetY;
     const duration = 500;
     const startTime = Date.now();
     const startX = flyingProduct.startX;
