@@ -45,15 +45,11 @@ export function CartProvider({ children }) {
 
   // Función para iniciar la animación de vuelo al carrito
   const triggerFlyingProduct = (productInfo, targetPosition) => {
-    setFlyingProduct({
-      ...productInfo,
-      targetX: targetPosition?.x || 0,
-      targetY: targetPosition?.y || 0
+    // Dispatch custom event para que FlyingProduct lo capture
+    const event = new CustomEvent('triggerFlyingProduct', {
+      detail: { productInfo, targetPosition }
     });
-    // Limpiar después de la animación
-    setTimeout(() => {
-      setFlyingProduct(null);
-    }, 1000);
+    window.dispatchEvent(event);
   };
 
   const addToCart = async (product, size, color, quantity = 1) => {
