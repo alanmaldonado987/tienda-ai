@@ -11,6 +11,7 @@ import ProductGrid from './components/ProductGrid'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import FlyingProduct from './components/FlyingProduct'
+import SupportChat from './components/SupportChat'
 import Auth from './components/Auth'
 import ProductDetail from './components/ProductDetail'
 import WishlistPage from './components/WishlistPage'
@@ -82,6 +83,7 @@ function App() {
                   } />
                 </Routes>
                 <FlyingProduct />
+                <SupportChat />
               </CartProvider>
             </WishlistProvider>
           </AuthProvider>

@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Menu, User, Heart, X, LogOut } from 'lucide-react'
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useModal } from '../components/ConfirmModal';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -12,8 +13,22 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const cartButtonRef = useRef(null);
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, confirmLogout } = useAuth();
   const { wishlistCount } = useWishlist();
+  const { openConfirm } = useModal();
+
+  const handleLogout = async () => {
+    const confirmed = await openConfirm({
+      title: '¿Cerrar sesión?',
+      message: '¿Estás seguro de que quieres cerrar sesión? Tu carrito se guardará para la próxima vez.',
+      confirmText: 'Cerrar sesión',
+      cancelText: 'Cancelar'
+    });
+    
+    if (confirmed) {
+      confirmLogout();
+    }
+  };
 
   const menuItems = [
     'Novedades',
@@ -149,7 +164,7 @@ export default function Header() {
                     Mis pedidos
                   </button>
                   <button 
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 flex items-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />

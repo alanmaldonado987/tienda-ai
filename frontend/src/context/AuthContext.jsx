@@ -57,9 +57,14 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = (showConfirmation = true) => {
+    return { showConfirmation }; // Retorna objeto para que el componente decida
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem('nafnaf-token');
     localStorage.removeItem('nafnaf-user');
+    localStorage.removeItem('nafnaf-cart');
     setUser(null);
   };
 
@@ -82,6 +87,7 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
+        confirmLogout,
         loading,
         error,
         refreshUser
