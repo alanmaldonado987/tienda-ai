@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { cartAPI } from '../services/api';
 import { useAuth } from './AuthContext';
+import { useModal } from '../components/ConfirmModal';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
+  const { openConfirm } = useModal();
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,12 +61,13 @@ export function CartProvider({ children }) {
     );
     
     if (existingItem && existingItem.quantity > 1) {
-      // Mostrar advertencia
-      const confirmed = window.confirm(
-        `Ya tienes ${existingItem.quantity} unidades de este producto en tu carrito.\n\n` +
-        `Si eliminas este producto del carrito, se eliminarán todas las ${existingItem.quantity} unidades.\n\n` +
-        `¿Deseas agregar ${quantity} más?`
-      );
+      // Mostrar modal de confirmación
+      const confirmed = await openConfirm({
+        title: 'Producto existente',
+        message: `Ya tienes ${existingItem.quantity} unidades de "${product.name}" en tu carrito.\n\nSi eliminas este producto del carrito, se eliminarán todas las ${existingItem.quantity} unidades.\n\n¿Deseas agregar ${quantity} más?`,
+        confirmText: 'Agregar más',
+        cancelText: 'Cancelar'
+      });
       
       if (!confirmed) {
         return; // El usuario canceló
@@ -102,18 +105,19 @@ export function CartProvider({ children }) {
     }
   };
 
-  const removeFromCart = async (productId, size, color) => {
+  const removeFromCart = async (productId, size, color, productName = 'este producto') => {
     // Verificar si el producto tiene más de 1 unidad
     const item = cart.find(
       i => i.id === productId && i.selectedSize === size && i.selectedColor === color
     );
     
     if (item && item.quantity > 1) {
-      const confirmed = window.confirm(
-        `Este producto tiene ${item.quantity} unidades en tu carrito.\n\n` +
-        `Si continúas, se eliminarán las ${item.quantity} unidades.\n\n` +
-        '¿Deseas eliminar todas las unidades?'
-      );
+      const confirmed = await openConfirm({
+        title: 'Eliminar múltiples unidades',
+        message: `Este producto tiene ${item.quantity} unidades en tu carrito.\n\nSi continúas, se eliminarán las ${item.quantity} unidades.\n\n¿Deseas eliminar todas las unidades?`,
+        confirmText: 'Eliminar todo',
+        cancelText: 'Cancelar'
+      });
       
       if (!confirmed) {
         return; // El usuario canceló

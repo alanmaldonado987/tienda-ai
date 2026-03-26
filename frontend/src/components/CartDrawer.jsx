@@ -100,7 +100,7 @@ export default function CartDrawer() {
                         </button>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor)}
+                        onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor, item.name)}
                         className="p-1 text-naf-gray hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
