@@ -11,6 +11,8 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const userRoutes = require('./routes/userRoutes');
+const supportRoutes = require('./routes/supportRoutes');
 const sequelize = require('./config/database');
 const Product = require('./models/Product');
 const SystemConfig = require('./models/SystemConfig');
@@ -43,7 +45,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', userRoutes);
+app.use('/api/support', supportRoutes);
 
 // Health check con estado de DB
 app.get('/health', async (req, res) => {

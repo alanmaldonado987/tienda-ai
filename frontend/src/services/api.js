@@ -85,4 +85,11 @@ export const cartAPI = {
   clear: () => api.delete('/cart/clear')
 };
 
+// ===== SUPPORT =====
+export const supportAPI = {
+  chat: (message, sessionId) => api.post('/support/chat', { message, sessionId }),
+  getTopics: () => api.get('/support/topics'),
+  sendFeedback: (messageId, rating, comment) => api.post('/support/feedback', { messageId, rating, comment })
+};
+
 export default api;
