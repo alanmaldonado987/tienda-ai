@@ -1,4 +1,4 @@
-const Product = require('../models/Product');
+const productService = require('../services/productService');
 
 /**
  * Obtener todos los productos
@@ -6,30 +6,14 @@ const Product = require('../models/Product');
 exports.getProducts = async (req, res, next) => {
   try {
     const { category, gender, search, sort } = req.query;
-
+    
     const filters = {};
     if (category) filters.category = category;
     if (gender) filters.gender = gender;
     if (search) filters.search = search;
+    if (sort) filters.sort = sort;
 
-    let products = await Product.findAll(filters);
-
-    // Ordenar
-    if (sort) {
-      switch (sort) {
-        case 'price-asc':
-          products.sort((a, b) => a.price - b.price);
-          break;
-        case 'price-desc':
-          products.sort((a, b) => b.price - a.price);
-          break;
-        case 'newest':
-          products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          break;
-        default:
-          break;
-      }
-    }
+    const products = await productService.getAll(filters);
 
     res.json({
       success: true,
@@ -50,21 +34,15 @@ exports.getProducts = async (req, res, next) => {
 exports.getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
+    const product = await productService.getById(id);
 
     res.json({
       success: true,
       data: product
     });
   } catch (error) {
-    res.status(500).json({
+    const status = error.message === 'Producto no encontrado' ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al obtener producto'
     });
@@ -77,7 +55,7 @@ exports.getProductById = async (req, res, next) => {
 exports.getProductsByCategory = async (req, res, next) => {
   try {
     const { category } = req.params;
-    const products = await Product.findByCategory(category);
+    const products = await productService.getByCategory(category);
 
     res.json({
       success: true,
@@ -97,7 +75,7 @@ exports.getProductsByCategory = async (req, res, next) => {
  */
 exports.createProduct = async (req, res, next) => {
   try {
-    const product = await Product.create(req.body);
+    const product = await productService.create(req.body);
 
     res.status(201).json({
       success: true,
@@ -118,7 +96,7 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const product = await Product.updateProduct(id, req.body);
+    const product = await productService.update(id, req.body);
 
     res.json({
       success: true,
@@ -126,7 +104,8 @@ exports.updateProduct = async (req, res, next) => {
       data: product
     });
   } catch (error) {
-    res.status(400).json({
+    const status = error.message === 'Producto no encontrado' ? 404 : 400;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al actualizar producto'
     });
@@ -139,7 +118,7 @@ exports.updateProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await Product.deleteProduct(id);
+    await productService.delete(id);
 
     res.json({
       success: true,

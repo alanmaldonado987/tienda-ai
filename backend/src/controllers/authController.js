@@ -1,7 +1,5 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const config = require('../config');
+const authService = require('../services/authService');
+const userService = require('../services/userService');
 
 /**
  * Registrar nuevo usuario
@@ -18,34 +16,12 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    // Encriptar contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Crear usuario (por defecto rol: user)
-    const user = await User.createUser({
-      name,
-      email,
-      phone,
-      password: hashedPassword
-    });
-
-    // Generar token JWT
-    const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
-
-    // Responder sin contraseña
-    const { password: _, ...userWithoutPassword } = user;
+    const result = await authService.register({ name, email, phone, password });
 
     res.status(201).json({
       success: true,
       message: 'Usuario creado exitosamente',
-      data: {
-        user: userWithoutPassword,
-        token
-      }
+      data: result
     });
   } catch (error) {
     res.status(400).json({
@@ -70,44 +46,16 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Buscar usuario
-    const user = await User.findByEmail(email);
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciales inválidas'
-      });
-    }
-
-    // Verificar contraseña
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciales inválidas'
-      });
-    }
-
-    // Generar token JWT
-    const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
-
-    // Responder sin contraseña
-    const { password: _, ...userWithoutPassword } = user;
+    const result = await authService.login(email, password);
 
     res.json({
       success: true,
       message: 'Login exitoso',
-      data: {
-        user: userWithoutPassword,
-        token
-      }
+      data: result
     });
   } catch (error) {
-    res.status(500).json({
+    const status = error.message === 'Credenciales inválidas' ? 401 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al iniciar sesión'
     });
@@ -119,23 +67,15 @@ exports.login = async (req, res, next) => {
  */
 exports.getMe = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
-    
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado'
-      });
-    }
-
-    const { password: _, ...userWithoutPassword } = user;
+    const user = await userService.getById(req.user.id);
 
     res.json({
       success: true,
-      data: userWithoutPassword
+      data: user
     });
   } catch (error) {
-    res.status(500).json({
+    const status = error.message === 'Usuario no encontrado' ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al obtener usuario'
     });

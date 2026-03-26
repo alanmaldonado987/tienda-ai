@@ -1,5 +1,4 @@
-const CartItem = require('../models/CartItem');
-const Product = require('../models/Product');
+const cartService = require('../services/cartService');
 
 /**
  * Obtener carrito del usuario
@@ -7,20 +6,11 @@ const Product = require('../models/Product');
 exports.getCart = async (req, res) => {
   try {
     const userId = req.user.id;
-    const cart = await CartItem.getCart(userId);
-
-    // Calcular totales
-    const subtotal = cart.reduce((sum, item) => {
-      return sum + (item.price * item.quantity);
-    }, 0);
+    const cart = await cartService.getCart(userId);
 
     res.json({
       success: true,
-      data: {
-        items: cart,
-        subtotal,
-        totalItems: cart.reduce((sum, item) => sum + item.quantity, 0)
-      }
+      data: cart
     });
   } catch (error) {
     console.error('Error al obtener carrito:', error);
@@ -39,41 +29,23 @@ exports.addToCart = async (req, res) => {
     const userId = req.user.id;
     const { productId, quantity = 1, selectedColor, selectedSize } = req.body;
 
-    // Verificar que el producto existe
-    const product = await Product.findByPk(productId);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
-
-    // Verificar stock
-    if (product.stock < quantity) {
-      return res.status(400).json({
-        success: false,
-        message: 'No hay suficiente stock disponible'
-      });
-    }
-
-    const item = await CartItem.addItem(userId, productId, quantity, selectedColor, selectedSize);
-    
-    // Obtener carrito actualizado
-    const cart = await CartItem.getCart(userId);
-    const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const result = await cartService.addItem(userId, {
+      productId,
+      quantity,
+      selectedColor,
+      selectedSize
+    });
 
     res.status(201).json({
       success: true,
       message: 'Producto agregado al carrito',
-      data: {
-        items: cart,
-        subtotal,
-        totalItems: cart.reduce((sum, i) => sum + i.quantity, 0)
-      }
+      data: result
     });
   } catch (error) {
     console.error('Error al agregar al carrito:', error);
-    res.status(500).json({
+    const status = error.message.includes('no encontrado') ? 404 : 
+                   error.message.includes('stock') ? 400 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al agregar al carrito'
     });
@@ -88,45 +60,22 @@ exports.updateCartItem = async (req, res) => {
     const userId = req.user.id;
     const { productId, quantity, selectedColor, selectedSize } = req.body;
 
-    if (!quantity || quantity < 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Cantidad inválida'
-      });
-    }
-
-    // Si cantidad es 0, eliminar el item
-    if (quantity === 0) {
-      await CartItem.removeItem(userId, productId, selectedColor, selectedSize);
-    } else {
-      // Verificar stock
-      const product = await Product.findByPk(productId);
-      if (product && product.stock < quantity) {
-        return res.status(400).json({
-          success: false,
-          message: 'No hay suficiente stock disponible'
-        });
-      }
-
-      await CartItem.updateQuantity(userId, productId, quantity, selectedColor, selectedSize);
-    }
-
-    // Obtener carrito actualizado
-    const cart = await CartItem.getCart(userId);
-    const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const result = await cartService.updateItem(userId, {
+      productId,
+      quantity,
+      selectedColor,
+      selectedSize
+    });
 
     res.json({
       success: true,
       message: 'Carrito actualizado',
-      data: {
-        items: cart,
-        subtotal,
-        totalItems: cart.reduce((sum, i) => sum + i.quantity, 0)
-      }
+      data: result
     });
   } catch (error) {
     console.error('Error al actualizar carrito:', error);
-    res.status(500).json({
+    const status = error.message.includes('inválida') || error.message.includes('stock') ? 400 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al actualizar carrito'
     });
@@ -142,31 +91,21 @@ exports.removeFromCart = async (req, res) => {
     const { productId } = req.params;
     const { selectedColor, selectedSize } = req.query;
 
-    const removed = await CartItem.removeItem(userId, productId, selectedColor, selectedSize);
-
-    if (!removed) {
-      return res.status(404).json({
-        success: false,
-        message: 'Item no encontrado en el carrito'
-      });
-    }
-
-    // Obtener carrito actualizado
-    const cart = await CartItem.getCart(userId);
-    const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const result = await cartService.removeItem(userId, {
+      productId,
+      selectedColor,
+      selectedSize
+    });
 
     res.json({
       success: true,
       message: 'Producto removido del carrito',
-      data: {
-        items: cart,
-        subtotal,
-        totalItems: cart.reduce((sum, i) => sum + i.quantity, 0)
-      }
+      data: result
     });
   } catch (error) {
     console.error('Error al quitar del carrito:', error);
-    res.status(500).json({
+    const status = error.message.includes('no encontrado') ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al quitar del carrito'
     });
@@ -179,16 +118,12 @@ exports.removeFromCart = async (req, res) => {
 exports.clearCart = async (req, res) => {
   try {
     const userId = req.user.id;
-    await CartItem.clearCart(userId);
+    const result = await cartService.clearCart(userId);
 
     res.json({
       success: true,
       message: 'Carrito vaciado',
-      data: {
-        items: [],
-        subtotal: 0,
-        totalItems: 0
-      }
+      data: result
     });
   } catch (error) {
     console.error('Error al limpiar carrito:', error);

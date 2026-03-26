@@ -14,17 +14,17 @@ const loadSystemPrompt = () => {
   } catch (error) {
     console.log('⚠️ No se encontró system-prompt.md, usando fallback');
     return `Eres Sofía, asistente virtual de MODACOLOMBIA, tienda de ropa en línea de Colombia.
-Información clave:
-- Envío gratis pedidos mayores a $150.000
-- Tiempo entrega: 3-5 días hábiles
-- 5 días para devoluciones
-- Métodos: tarjetas, transferencia, efectivo
-- WhatsApp: 300-XXX-XXXX
-- Email: atencion@modacolombia.com
-- Horario: L-V 8am-6pm, Sábados 9am-5pm
+      Información clave:
+      - Envío gratis pedidos mayores a $150.000
+      - Tiempo entrega: 3-5 días hábiles
+      - 5 días para devoluciones
+      - Métodos: tarjetas, transferencia, efectivo
+      - WhatsApp: 300-XXX-XXXX
+      - Email: atencion@modacolombia.com
+      - Horario: L-V 8am-6pm, Sábados 9am-5pm
 
-Responde siempre en español, de manera amable y útil. Sé concisa y servicial.`;
-  }
+      Responde siempre en español, de manera amable y útil. Sé concisa y servicial.`;
+        }
 };
 
 // Inicializar Gemini

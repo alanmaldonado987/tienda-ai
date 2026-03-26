@@ -1,37 +1,20 @@
-const User = require('../models/User');
-const Role = require('../models/Role');
-const bcrypt = require('bcryptjs');
+const userService = require('../services/userService');
 
 /**
  * Obtener perfil del usuario actual
  */
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado'
-      });
-    }
+    const user = await userService.getProfile(req.user.id);
 
-    // Obtener rol
-    const role = await Role.findByPk(user.roleId);
-
-    // Remover contraseña de la respuesta
-    const { password: _, ...userData } = user;
-    
     res.json({
       success: true,
-      data: {
-        ...userData,
-        role: role ? role.name : null
-      }
+      data: user
     });
   } catch (error) {
     console.error('Error al obtener perfil:', error);
-    res.status(500).json({
+    const status = error.message === 'Usuario no encontrado' ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al obtener perfil'
     });
@@ -54,40 +37,17 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    // Verificar si el nuevo email ya está en uso por otro usuario
-    const existingUser = await User.findOne({
-      where: { email, id: { [require('sequelize').Op.ne]: userId } }
-    });
-    
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'El email ya está en uso'
-      });
-    }
-
-    // Actualizar usuario
-    await User.update(
-      { name, email, phone },
-      { where: { id: userId } }
-    );
-
-    // Obtener usuario actualizado
-    const user = await User.findById(userId);
-    const role = await Role.findByPk(user.roleId);
-    const { password: _, ...userData } = user;
+    const user = await userService.updateProfile(userId, { name, email, phone });
 
     res.json({
       success: true,
       message: 'Perfil actualizado exitosamente',
-      data: {
-        ...userData,
-        role: role ? role.name : null
-      }
+      data: user
     });
   } catch (error) {
     console.error('Error al actualizar perfil:', error);
-    res.status(500).json({
+    const status = error.message.includes('ya está en uso') ? 400 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al actualizar perfil'
     });
@@ -117,32 +77,7 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // Obtener usuario actual
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado'
-      });
-    }
-
-    // Verificar contraseña actual
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({
-        success: false,
-        message: 'Contraseña actual incorrecta'
-      });
-    }
-
-    // Encriptar nueva contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Actualizar contraseña
-    await User.update(
-      { password: hashedPassword },
-      { where: { id: userId } }
-    );
+    await userService.changePassword(userId, currentPassword, newPassword);
 
     res.json({
       success: true,
@@ -150,7 +85,8 @@ exports.changePassword = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al cambiar contraseña:', error);
-    res.status(500).json({
+    const status = error.message.includes('incorrecta') ? 401 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al cambiar contraseña'
     });

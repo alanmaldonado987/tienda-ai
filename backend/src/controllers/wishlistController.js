@@ -1,5 +1,4 @@
-const Wishlist = require('../models/Wishlist');
-const Product = require('../models/Product');
+const wishlistService = require('../services/wishlistService');
 
 /**
  * Obtener wishlist del usuario
@@ -7,7 +6,7 @@ const Product = require('../models/Product');
 exports.getWishlist = async (req, res) => {
   try {
     const userId = req.user.id;
-    const favorites = await Wishlist.getUserFavorites(userId);
+    const favorites = await wishlistService.getWishlist(userId);
 
     res.json({
       success: true,
@@ -31,25 +30,17 @@ exports.addToWishlist = async (req, res) => {
     const userId = req.user.id;
     const { productId } = req.params;
 
-    // Verificar que el producto existe
-    const product = await Product.findByPk(productId);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
+    const result = await wishlistService.addItem(userId, productId);
 
-    const { favorite, isNew } = await Wishlist.addFavorite(userId, productId);
-
-    res.status(isNew ? 201 : 200).json({
+    res.status(result.isNew ? 201 : 200).json({
       success: true,
-      message: isNew ? 'Producto agregado a favoritos' : 'Producto ya está en favoritos',
-      data: product
+      message: result.message,
+      data: result.product
     });
   } catch (error) {
     console.error('Error al agregar a wishlist:', error);
-    res.status(500).json({
+    const status = error.message.includes('no encontrado') ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al agregar a favoritos'
     });
@@ -64,22 +55,16 @@ exports.removeFromWishlist = async (req, res) => {
     const userId = req.user.id;
     const { productId } = req.params;
 
-    const removed = await Wishlist.removeFavorite(userId, productId);
-
-    if (!removed) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no estaba en favoritos'
-      });
-    }
+    const result = await wishlistService.removeItem(userId, productId);
 
     res.json({
       success: true,
-      message: 'Producto removido de favoritos'
+      message: result.message
     });
   } catch (error) {
     console.error('Error al quitar de wishlist:', error);
-    res.status(500).json({
+    const status = error.message.includes('no estaba') ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al quitar de favoritos'
     });
@@ -94,30 +79,20 @@ exports.toggleWishlist = async (req, res) => {
     const userId = req.user.id;
     const { productId } = req.params;
 
-    // Verificar que el producto existe
-    const product = await Product.findByPk(productId);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
-
-    const result = await Wishlist.toggleFavorite(userId, productId);
+    const result = await wishlistService.toggleItem(userId, productId);
 
     res.json({
       success: true,
-      message: result.action === 'added' 
-        ? 'Producto agregado a favoritos' 
-        : 'Producto removido de favoritos',
+      message: result.message,
       data: {
         isFavorite: result.isFavorite,
-        product
+        product: result.product
       }
     });
   } catch (error) {
     console.error('Error al toggle wishlist:', error);
-    res.status(500).json({
+    const status = error.message.includes('no encontrado') ? 404 : 500;
+    res.status(status).json({
       success: false,
       message: error.message || 'Error al actualizar favoritos'
     });
