@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, User, Heart, X, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -11,37 +11,9 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const cartButtonRef = useRef(null);
-  const { cartCount, setIsCartOpen, setCartButtonPosition } = useCart();
+  const { cartCount, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const { wishlistCount } = useWishlist();
-
-  // Actualizar posición del botón del carrito
-  useEffect(() => {
-    const updatePosition = () => {
-      if (cartButtonRef.current) {
-        const rect = cartButtonRef.current.getBoundingClientRect();
-        const newPos = {
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2
-        };
-        console.log('Cart button position:', newPos);
-        setCartButtonPosition(newPos);
-      }
-    };
-
-    // Ejecutar después del mount para asegurar que el DOM esté listo
-    setTimeout(updatePosition, 100);
-    // También ejecutar cuando el layout cambie
-    const observer = new ResizeObserver(updatePosition);
-    if (cartButtonRef.current) {
-      observer.observe(cartButtonRef.current);
-    }
-    window.addEventListener('resize', updatePosition);
-    return () => {
-      window.removeEventListener('resize', updatePosition);
-      observer.disconnect();
-    };
-  }, [setCartButtonPosition, mobileMenuOpen]);
 
   const menuItems = [
     'Novedades',
