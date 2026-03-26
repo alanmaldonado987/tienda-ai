@@ -2,6 +2,9 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3001/api';
 
+// Flag para evitar loop de redirects
+let isRedirecting = false;
+
 // Crear instancia de axios
 const api = axios.create({
   baseURL: API_URL,
@@ -28,11 +31,22 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Evitar loop infinito de redirects
+    if (isRedirecting) {
+      return Promise.reject(error);
+    }
+
+    // Ignorar errores de la página de auth
+    if (window.location.pathname === '/auth') {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
+      isRedirecting = true;
       // Token expirado o inválido
       localStorage.removeItem('nafnaf-token');
       localStorage.removeItem('nafnaf-user');
-      window.location.href = '/auth';
+      window.location.replace('/auth');
     }
     return Promise.reject(error);
   }
@@ -42,7 +56,9 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
-  getMe: () => api.get('/auth/me')
+  getMe: () => api.get('/auth/me'),
+  updateProfile: (data) => api.put('/users/profile', data),
+  changePassword: (data) => api.put('/users/password', data)
 };
 
 // ===== PRODUCTS =====
@@ -50,6 +66,23 @@ export const productsAPI = {
   getAll: (params) => api.get('/products', { params }),
   getById: (id) => api.get(`/products/${id}`),
   getByCategory: (category) => api.get(`/products/category/${category}`)
+};
+
+// ===== WISHLIST =====
+export const wishlistAPI = {
+  getAll: () => api.get('/wishlist'),
+  add: (productId) => api.post(`/wishlist/${productId}`),
+  remove: (productId) => api.delete(`/wishlist/${productId}`),
+  toggle: (productId) => api.post(`/wishlist/toggle/${productId}`)
+};
+
+// ===== CART =====
+export const cartAPI = {
+  get: () => api.get('/cart'),
+  add: (data) => api.post('/cart', data),
+  update: (data) => api.put('/cart', data),
+  remove: (productId, params) => api.delete(`/cart/${productId}`, { params }),
+  clear: () => api.delete('/cart/clear')
 };
 
 export default api;

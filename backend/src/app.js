@@ -9,9 +9,14 @@ const config = require('./config');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const sequelize = require('./config/database');
 const Product = require('./models/Product');
 const SystemConfig = require('./models/SystemConfig');
+const Role = require('./models/Role');
+const Wishlist = require('./models/Wishlist');
+const CartItem = require('./models/CartItem');
 
 const app = express();
 
@@ -36,6 +41,9 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas API
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/users', require('./routes/userRoutes'));
 
 // Health check con estado de DB
 app.get('/health', async (req, res) => {
@@ -77,9 +85,12 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
     
-    // Sync modelos (sin modificar tablas existentes)
-    await sequelize.sync({ alter: true });
+    // Sync modelos (solo crea si no existen)
+    await sequelize.sync({ alter: false });
     console.log('✅ Models synchronized');
+    
+    // Cargar roles iniciales si no existen
+    await Role.seedInitial();
     
     // Cargar productos iniciales si no existen
     await Product.seedInitial();

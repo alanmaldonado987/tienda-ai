@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from './Toast';
 import Modal from './Modal';
 import { terminosCondiciones, politicaPrivacidad } from './LegalModals';
 
 export default function Auth() {
-  const { login, register, loading, error, user } = useAuth();
+  const navigate = useNavigate();
+  const { login, register, loading, user } = useAuth();
+  const { success, error: showError } = useToast();
+  
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +26,13 @@ export default function Auth() {
     confirmPassword: '',
     rememberMe: false
   });
+
+  // Si ya está logueado, redirigir al home
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -68,13 +79,28 @@ export default function Auth() {
     
     if (isLogin) {
       const result = await login(formData.email, formData.password);
-      if (!result.success) {
-        setFormErrors({ general: result.message });
+      if (result.success) {
+        success('¡Bienvenido de vuelta!');
+        navigate('/');
+      } else {
+        showError(result.message || 'Credenciales inválidas');
       }
     } else {
       const result = await register(formData);
-      if (!result.success) {
-        setFormErrors({ general: result.message });
+      if (result.success) {
+        success('¡Cuenta creada exitosamente! Ahora puedes iniciar sesión');
+        // Limpiar formulario y cambiar a login
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          password: '',
+          confirmPassword: '',
+          rememberMe: false
+        });
+        setIsLogin(true);
+      } else {
+        showError(result.message || 'Error al crear la cuenta');
       }
     }
   };
@@ -296,20 +322,20 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Error general */}
-            {formErrors.general && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 text-xs rounded">
-                {formErrors.general}
-              </div>
-            )}
-
             {/* Submit button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-naf-black text-white py-2.5 text-sm font-medium tracking-wider hover:bg-naf-gray transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-naf-black text-white py-2.5 text-sm font-medium tracking-wider hover:bg-naf-gray transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'CARGANDO...' : isLogin ? 'INICIAR SESIÓN' : 'CREAR CUENTA'}
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  CARGANDO...
+                </>
+              ) : (
+                isLogin ? 'INICIAR SESIÓN' : 'CREAR CUENTA'
+              )}
             </button>
 
             {/* Divider */}

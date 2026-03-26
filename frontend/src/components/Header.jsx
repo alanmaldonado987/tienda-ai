@@ -138,8 +138,15 @@ export default function Header() {
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
-                  <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-50">Mi cuenta</a>
-                  <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-50">Mis pedidos</a>
+                  <button 
+                    onClick={() => navigate('/profile')}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    Mi perfil
+                  </button>
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-naf-gray">
+                    Mis pedidos
+                  </button>
                   <button 
                     onClick={logout}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 flex items-center gap-2"

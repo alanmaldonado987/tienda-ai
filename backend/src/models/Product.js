@@ -67,7 +67,11 @@ const Product = sequelize.define('Product', {
   underscored: true
 });
 
-// Métodos estáticos (compatibles con API anterior)
+// Guardar referencia original de Sequelize ANTES de sobreescribir
+Product._findAllOriginal = Product.findAll;
+
+const { Op } = require('sequelize');
+
 Product.findAll = async function(filters = {}) {
   const where = {};
   
@@ -76,17 +80,17 @@ Product.findAll = async function(filters = {}) {
   }
   
   if (filters.gender) {
-    where.gender = { [sequelize.Sequelize.Op.or]: [filters.gender, 'unisex'] };
+    where.gender = { [Op.or]: [filters.gender, 'unisex'] };
   }
   
   if (filters.search) {
-    where[sequelize.Sequelize.Op.or] = [
-      { name: { [sequelize.Sequelize.Op.iLike]: `%${filters.search}%` } },
-      { description: { [sequelize.Sequelize.Op.iLike]: `%${filters.search}%` } }
+    where[Op.or] = [
+      { name: { [Op.iLike]: `%${filters.search}%` } },
+      { description: { [Op.iLike]: `%${filters.search}%` } }
     ];
   }
   
-  return await Product.findAll({ where });
+  return await Product._findAllOriginal({ where });
 };
 
 Product.findById = async function(id) {
@@ -94,7 +98,7 @@ Product.findById = async function(id) {
 };
 
 Product.findByCategory = async function(category) {
-  return await Product.findAll({ where: { category } });
+  return await Product._findAllOriginal({ where: { category } });
 };
 
 Product.createProduct = async function(productData) {
@@ -123,10 +127,10 @@ Product.seedInitial = async function() {
   const count = await Product.count();
   if (count > 0) return;
   
-  const { v4: uuidv4 } = require('uuid');
+  const { randomUUID } = require('crypto');
   const initialProducts = [
     {
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Camisa Manga Larga Classic",
       price: 89900,
       originalPrice: 119900,
@@ -140,7 +144,7 @@ Product.seedInitial = async function() {
       stock: 50
     },
     {
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Jeans Slim Fit",
       price: 129900,
       originalPrice: null,
@@ -154,7 +158,7 @@ Product.seedInitial = async function() {
       stock: 100
     },
     {
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Sudadera con Capucha",
       price: 99900,
       originalPrice: 149900,
@@ -168,7 +172,7 @@ Product.seedInitial = async function() {
       stock: 75
     },
     {
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Vestido Midi Floral",
       price: 159900,
       originalPrice: null,
@@ -182,7 +186,7 @@ Product.seedInitial = async function() {
       stock: 30
     },
     {
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Zapatillas Urbanas",
       price: 199900,
       originalPrice: 259900,
