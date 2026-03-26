@@ -64,7 +64,7 @@ export function CartProvider({ children }) {
       // Mostrar modal de confirmación
       const confirmed = await openConfirm({
         title: 'Producto existente',
-        message: `Ya tienes ${existingItem.quantity} unidades de "${product.name}" en tu carrito.\n\nSi eliminas este producto del carrito, se eliminarán todas las ${existingItem.quantity} unidades.\n\n¿Deseas agregar ${quantity} más?`,
+        message: `Ya tienes ${existingItem.quantity} unidades de "${product.name}" en tu carrito. ¿Deseas agregar ${quantity} más?`,
         confirmText: 'Agregar más',
         cancelText: 'Cancelar'
       });
@@ -114,7 +114,7 @@ export function CartProvider({ children }) {
     if (item && item.quantity > 1) {
       const confirmed = await openConfirm({
         title: 'Eliminar múltiples unidades',
-        message: `Este producto tiene ${item.quantity} unidades en tu carrito.\n\nSi continúas, se eliminarán las ${item.quantity} unidades.\n\n¿Deseas eliminar todas las unidades?`,
+        message: `Este producto tiene ${item.quantity} unidades en tu carrito. ¿Confirmas que deseas eliminarlas todas?`,
         confirmText: 'Eliminar todo',
         cancelText: 'Cancelar'
       });
