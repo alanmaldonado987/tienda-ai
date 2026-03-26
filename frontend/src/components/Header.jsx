@@ -24,6 +24,7 @@ export default function Header() {
           x: rect.left + rect.width / 2,
           y: rect.top + rect.height / 2
         };
+        console.log('Cart button position:', newPos);
         setCartButtonPosition(newPos);
       }
     };
@@ -31,8 +32,15 @@ export default function Header() {
     // Ejecutar después del mount para asegurar que el DOM esté listo
     setTimeout(updatePosition, 100);
     // También ejecutar cuando el layout cambie
+    const observer = new ResizeObserver(updatePosition);
+    if (cartButtonRef.current) {
+      observer.observe(cartButtonRef.current);
+    }
     window.addEventListener('resize', updatePosition);
-    return () => window.removeEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      observer.disconnect();
+    };
   }, [setCartButtonPosition, mobileMenuOpen]);
 
   const menuItems = [

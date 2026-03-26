@@ -9,11 +9,13 @@ export default function FlyingProduct() {
 
   // Guardar la posición del carrito cuando cambie
   useEffect(() => {
+    console.log('cartButtonPosition updated:', cartButtonPosition);
     if (cartButtonPosition?.x && cartButtonPosition?.y) {
       positionRef.current = { 
         x: cartButtonPosition.x, 
         y: cartButtonPosition.y 
       };
+      console.log('positionRef updated:', positionRef.current);
     }
   }, [cartButtonPosition]);
 
