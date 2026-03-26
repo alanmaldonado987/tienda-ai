@@ -112,7 +112,7 @@ export function CartProvider({ children }) {
       const confirmed = window.confirm(
         `Este producto tiene ${item.quantity} unidades en tu carrito.\n\n` +
         `Si continúas, se eliminarán las ${item.quantity} unidades.\n\n` +
-        ¿Deseas eliminar todas las unidades?`
+        '¿Deseas eliminar todas las unidades?'
       );
       
       if (!confirmed) {
