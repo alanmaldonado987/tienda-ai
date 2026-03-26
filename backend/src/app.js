@@ -88,8 +88,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
     
-    // Sync modelos (solo crea si no existen)
-    await sequelize.sync({ alter: true });
+    // Sync modelos (solo crea si no existen, no modifica estructura)
+    await sequelize.sync({ alter: false });
     console.log('✅ Models synchronized');
     
     // Cargar roles iniciales si no existen
