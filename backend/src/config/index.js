@@ -16,6 +16,9 @@ module.exports = {
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
   },
 
+  // Gemini AI
+  geminiApiKey: process.env.GEMINI_API_KEY,
+
   // Base de datos (para futuro uso)
   database: {
     host: process.env.DB_HOST || 'localhost',
