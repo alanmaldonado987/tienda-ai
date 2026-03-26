@@ -62,7 +62,7 @@ export default function FlyingProduct() {
         transform: 'translate(-50%, -50%)'
       }}
     >
-      <div className="w-12 h-16 bg-white rounded-md shadow-xl overflow-hidden border border-naf-black">
+      <div className="w-12 h-12 rounded-full shadow-xl overflow-hidden border-2 border-naf-black bg-white">
         <img src={flyingProduct.image} alt={flyingProduct.name} className="w-full h-full object-cover" />
       </div>
     </div>
