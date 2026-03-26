@@ -57,16 +57,16 @@ export function CartProvider({ children }) {
       // Sin usuario, guardar en localStorage
       setCart(prev => {
         const existing = prev.find(
-          item => item.id === product.id && item.size === size && item.color === color
+          item => item.id === product.id && item.selectedSize === size && item.selectedColor === color
         );
         if (existing) {
           return prev.map(item =>
-            item.id === product.id && item.size === size && item.color === color
+            item.id === product.id && item.selectedSize === size && item.selectedColor === color
               ? { ...item, quantity: item.quantity + quantity }
               : item
           );
         }
-        return [...prev, { ...product, size, color, quantity }];
+        return [...prev, { ...product, selectedSize: size, selectedColor: color, quantity }];
       });
       return;
     }
@@ -88,7 +88,7 @@ export function CartProvider({ children }) {
     if (!user) {
       setCart(prev =>
         prev.filter(
-          item => !(item.id === productId && item.size === size && item.color === color)
+          item => !(item.id === productId && item.selectedSize === size && item.selectedColor === color)
         )
       );
       return;
@@ -113,7 +113,7 @@ export function CartProvider({ children }) {
       }
       setCart(prev =>
         prev.map(item =>
-          item.id === productId && item.size === size && item.color === color
+          item.id === productId && item.selectedSize === size && item.selectedColor === color
             ? { ...item, quantity }
             : item
         )

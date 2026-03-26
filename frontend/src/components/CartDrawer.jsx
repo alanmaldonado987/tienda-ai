@@ -58,7 +58,7 @@ export default function CartDrawer() {
             <div className="space-y-4">
               {cart.map((item) => (
                 <div
-                  key={`${item.id}-${item.size}-${item.color}`}
+                  key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
                   className="flex gap-4 pb-4 border-b"
                 >
                   {/* Image */}
@@ -76,7 +76,7 @@ export default function CartDrawer() {
                       {item.name}
                     </h3>
                     <p className="text-xs text-naf-gray mb-2">
-                      Talla: {item.size} | Color: {item.color}
+                      Talla: {item.selectedSize || 'Único'} | Color: {item.selectedColor || 'N/A'}
                     </p>
                     <p className="text-sm font-semibold mb-3">
                       {formatPrice(item.price)}
@@ -86,21 +86,21 @@ export default function CartDrawer() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center border">
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor, item.quantity - 1)}
                           className="p-1 hover:bg-naf-light-gray transition-colors"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
                         <span className="px-3 text-sm">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor, item.quantity + 1)}
                           className="p-1 hover:bg-naf-light-gray transition-colors"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id, item.size, item.color)}
+                        onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor)}
                         className="p-1 text-naf-gray hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
