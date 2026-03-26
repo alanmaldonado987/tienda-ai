@@ -28,7 +28,7 @@ Responde siempre en español, de manera amable y útil. Sé concisa y servicial.
 
 // Inicializar Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 /**
  * POST /api/support/chat - Chat con el bot de soporte (Gemini AI)
