@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 
 export default function FlyingProduct() {
-  const { flyingProduct } = useCart();
+  const { flyingProduct, cartButtonPosition } = useCart();
   const [position, setPosition] = useState({ x: 0, y: 0, opacity: 1 });
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -12,9 +12,9 @@ export default function FlyingProduct() {
       setPosition({ x: flyingProduct.startX, y: flyingProduct.startY, opacity: 1 });
       setIsAnimating(true);
 
-      // Calcular posición final (carrito en header - aproximada)
-      const targetX = window.innerWidth - 80;
-      const targetY = 80;
+      // Posición objetivo: el botón del carrito en el header
+      const targetX = cartButtonPosition.x || window.innerWidth - 80;
+      const targetY = cartButtonPosition.y || 100;
 
       // Animación de vuelo
       const duration = 600;
@@ -32,7 +32,6 @@ export default function FlyingProduct() {
         const currentX = startX + (targetX - startX) * ease;
         const currentY = startY + (targetY - startY) * ease;
         const currentOpacity = 1 - progress * 0.3;
-        const scale = 1 - progress * 0.5;
 
         setPosition({ x: currentX, y: currentY, opacity: currentOpacity });
 
@@ -48,7 +47,7 @@ export default function FlyingProduct() {
 
       requestAnimationFrame(animate);
     }
-  }, [flyingProduct]);
+  }, [flyingProduct, cartButtonPosition]);
 
   if (!flyingProduct || !isAnimating) return null;
 
@@ -59,8 +58,7 @@ export default function FlyingProduct() {
         left: position.x,
         top: position.y,
         opacity: position.opacity,
-        transform: `translate(-50%, -50%) scale(${1 - (flyingProduct ? 0.5 : 0)})`,
-        transition: 'none'
+        transform: 'translate(-50%, -50%)'
       }}
     >
       <div className="w-16 h-20 bg-white rounded-lg shadow-2xl overflow-hidden border-2 border-naf-black">

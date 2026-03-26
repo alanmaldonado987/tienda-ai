@@ -10,6 +10,7 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [flyingProduct, setFlyingProduct] = useState(null);
+  const [cartButtonPosition, setCartButtonPosition] = useState({ x: 0, y: 0 });
 
   // Cargar carrito de la API cuando el usuario inicia sesión
   useEffect(() => {
@@ -171,7 +172,8 @@ export function CartProvider({ children }) {
         setIsCartOpen,
         refreshCart: fetchCart,
         flyingProduct,
-        triggerFlyingProduct
+        triggerFlyingProduct,
+        setCartButtonPosition
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, User, Heart, X, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -10,9 +10,27 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { cartCount, setIsCartOpen } = useCart();
+  const cartButtonRef = useRef(null);
+  const { cartCount, setIsCartOpen, setCartButtonPosition } = useCart();
   const { user, logout } = useAuth();
   const { wishlistCount } = useWishlist();
+
+  // Actualizar posición del botón del carrito
+  useEffect(() => {
+    const updatePosition = () => {
+      if (cartButtonRef.current) {
+        const rect = cartButtonRef.current.getBoundingClientRect();
+        setCartButtonPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [setCartButtonPosition]);
 
   const menuItems = [
     'Novedades',
@@ -180,6 +198,7 @@ export default function Header() {
 
             {/* Cart */}
             <button
+              ref={cartButtonRef}
               onClick={() => setIsCartOpen(true)}
               className="p-2 hover:bg-naf-light-gray rounded-full transition-colors relative"
             >
