@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
+import { ConfigProvider, useConfig } from './context/ConfigContext'
 import { ToastProvider } from './components/Toast'
 import { ModalProvider } from './components/ConfirmModal'
 import LoadingBar from './components/LoadingBar'
@@ -17,6 +18,9 @@ import ProductDetail from './components/ProductDetail'
 import WishlistPage from './components/WishlistPage'
 import SearchPage from './components/SearchPage'
 import ProfilePage from './components/ProfilePage'
+import CheckoutPage from './components/CheckoutPage'
+import OrdersPage from './components/OrdersPage'
+import TitleUpdater from './components/TitleUpdater'
 
 function HomePage() {
   return (
@@ -35,12 +39,14 @@ function HomePage() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <ModalProvider>
-          <LoadingBar />
-          <AuthProvider>
-            <WishlistProvider>
-              <CartProvider>
+      <ConfigProvider>
+        <ToastProvider>
+          <ModalProvider>
+            <LoadingBar />
+            <TitleUpdater />
+            <AuthProvider>
+              <WishlistProvider>
+                <CartProvider>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/auth" element={<Auth />} />
@@ -81,6 +87,24 @@ function App() {
                       <Footer />
                     </div>
                   } />
+                  <Route path="/checkout" element={
+                    <div className="min-h-screen flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  } />
+                  <Route path="/orders" element={
+                    <div className="min-h-screen flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <OrdersPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  } />
                 </Routes>
                 <FlyingProduct />
                 <SupportChat />
@@ -89,7 +113,8 @@ function App() {
           </AuthProvider>
         </ModalProvider>
       </ToastProvider>
-    </BrowserRouter>
+    </ConfigProvider>
+  </BrowserRouter>
   )
 }
 

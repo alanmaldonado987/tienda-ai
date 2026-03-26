@@ -1,7 +1,9 @@
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartDrawer() {
+  const navigate = useNavigate();
   const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
 
   const formatPrice = (price) => {
@@ -133,7 +135,10 @@ export default function CartDrawer() {
             </div>
 
             {/* Checkout button */}
-            <button className="w-full bg-naf-black text-white py-4 text-sm tracking-wider hover:bg-naf-gray transition-colors">
+            <button 
+              onClick={() => { setIsCartOpen(false); navigate('/checkout'); }}
+              className="w-full bg-naf-black text-white py-4 text-sm tracking-wider hover:bg-naf-gray transition-colors"
+            >
               FINALIZAR COMPRA
             </button>
 

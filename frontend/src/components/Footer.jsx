@@ -1,6 +1,9 @@
 import { MapPin, Phone, Mail } from 'lucide-react';
+import { useConfig } from '../context/ConfigContext';
 
 export default function Footer() {
+  const { config } = useConfig();
+  const appName = config.app_name || 'TuTienda';
   const footerLinks = {
     empresa: [
       'Quiénes somos',
@@ -30,10 +33,10 @@ export default function Footer() {
           {/* Logo & description */}
           <div className="lg:col-span-2">
             <h2 className="text-2xl lg:text-3xl font-semibold tracking-wider mb-4">
-              TU<span className="font-light">TIENDA</span>
+              {appName.toUpperCase()}
             </h2>
             <p className="text-gray-400 text-sm mb-6 max-w-sm">
-              Moda para toda la familia. Encuentra las mejores tendencias en ropa, zapatos y accesorios para hombre, mujer y niños.
+              {config.description || 'Moda para toda la familia. Encuentra las mejores tendencias en ropa, zapatos y accesorios.'}
             </p>
 
             {/* Contact */}
@@ -149,7 +152,7 @@ export default function Footer() {
       <div className="w-full border-t border-gray-800">
         <div className="max-w-[1440px] mx-auto px-4 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-500">
-            <p>© 2026 TuTienda Colombia. Todos los derechos reservados.</p>
+            <p>© 2026 {appName}. Todos los derechos reservados.</p>
             <div className="flex items-center gap-4">
               <span>Hecho con ❤️ en Colombia</span>
             </div>

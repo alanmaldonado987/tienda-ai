@@ -28,6 +28,20 @@ const OrderItem = sequelize.define('OrderItem', {
       key: 'id'
     }
   },
+  productName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  productImage: {
+    type: DataTypes.STRING
+  },
+  price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  originalPrice: {
+    type: DataTypes.DECIMAL(10, 2)
+  },
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -35,17 +49,11 @@ const OrderItem = sequelize.define('OrderItem', {
       min: 1
     }
   },
-  price: {
-    type: DataTypes.INTEGER,
-    allowNull: false
+  selectedColor: {
+    type: DataTypes.STRING
   },
-  size: {
-    type: DataTypes.STRING(20),
-    allowNull: true
-  },
-  color: {
-    type: DataTypes.STRING(50),
-    allowNull: true
+  selectedSize: {
+    type: DataTypes.STRING
   }
 }, {
   tableName: 'order_items',
@@ -53,6 +61,7 @@ const OrderItem = sequelize.define('OrderItem', {
   underscored: true
 });
 
+// Métodos estáticos
 OrderItem.findByOrderId = async function(orderId) {
   return await OrderItem.findAll({ where: { orderId } });
 };

@@ -92,4 +92,18 @@ export const supportAPI = {
   sendFeedback: (messageId, rating, comment) => api.post('/support/feedback', { messageId, rating, comment })
 };
 
+// ===== ORDERS =====
+export const ordersAPI = {
+  create: (data) => api.post('/orders', data),
+  getAll: () => api.get('/orders'),
+  getById: (id) => api.get(`/orders/${id}`),
+  cancel: (id, reason) => api.delete(`/orders/${id}`, { data: { reason } })
+};
+
+// ===== CONFIG =====
+export const configAPI = {
+  getAll: () => api.get('/config'),
+  getValue: (key) => api.get(`/config/${key}`)
+};
+
 export default api;

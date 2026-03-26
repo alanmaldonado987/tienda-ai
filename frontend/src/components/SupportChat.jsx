@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, ChevronRight } from 'lucide-react';
 import { supportAPI } from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 export default function SupportChat() {
+  const { config } = useConfig();
+  const appName = config.app_name || 'MODACOLOMBIA';
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, type: 'bot', text: '¡Hola! 👋 Soy el asistente de MODACOLOMBIA. ¿En qué puedo ayudarte?' }
+    { id: 1, type: 'bot', text: `¡Hola! 👋 Soy el asistente de ${appName}. ¿En qué puedo ayudarte?` }
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);

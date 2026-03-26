@@ -13,12 +13,16 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const userRoutes = require('./routes/userRoutes');
 const supportRoutes = require('./routes/supportRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const configRoutes = require('./routes/configRoutes');
 const sequelize = require('./config/database');
 const Product = require('./models/Product');
 const SystemConfig = require('./models/SystemConfig');
 const Role = require('./models/Role');
 const Wishlist = require('./models/Wishlist');
 const CartItem = require('./models/CartItem');
+const Order = require('./models/Order');
+const OrderItem = require('./models/OrderItem');
 
 const app = express();
 
@@ -47,6 +51,15 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/config', configRoutes);
+
+// TEST: Direct inline route
+app.get('/api/direct-test', (req, res) => {
+  res.json({ message: 'Direct test works!' });
+});
+
+console.log('✅ Routes registered');
 
 // Health check con estado de DB
 app.get('/health', async (req, res) => {
