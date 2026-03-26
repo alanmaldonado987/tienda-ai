@@ -132,6 +132,14 @@ export default function ProductGrid({ searchQuery = '' }) {
           filteredProducts = filteredProducts.filter(p => p.originalPrice);
         }
 
+        // Filtrar por tallas
+        if (selectedSizes.length > 0) {
+          filteredProducts = filteredProducts.filter(p => {
+            if (!p.sizes) return false;
+            return p.sizes.some(size => selectedSizes.includes(size.toLowerCase()));
+          });
+        }
+
         setProducts(filteredProducts);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -142,7 +150,7 @@ export default function ProductGrid({ searchQuery = '' }) {
     };
 
     fetchProducts();
-  }, [activeCategory, sortBy, searchQuery, selectedPriceRange, selectedColors, selectedGenders, onSale]);
+  }, [activeCategory, sortBy, searchQuery, selectedPriceRange, selectedColors, selectedGenders, selectedSizes, onSale]);
 
   const sortOptions = [
     { value: 'recommended', label: 'Recomendados' },
