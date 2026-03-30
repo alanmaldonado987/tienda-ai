@@ -139,7 +139,8 @@ export default function InventoryPage() {
     }
   }
 
-  const filteredProducts = products.filter(product => {
+  const productsArray = Array.isArray(products) ? products : []
+  const filteredProducts = productsArray.filter(product => {
     const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) || true
     let matchesStock = true
     if (filterStock === 'low') matchesStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 5)
@@ -147,9 +148,9 @@ export default function InventoryPage() {
     return matchesSearch && matchesStock
   })
 
-  const lowStockCount = products.filter(p => p.stock > 0 && p.stock <= (p.lowStockThreshold || 5)).length
-  const outOfStockCount = products.filter(p => p.stock === 0).length
-  const totalProducts = products.length
+  const lowStockCount = productsArray.filter(p => p.stock > 0 && p.stock <= (p.lowStockThreshold || 5)).length
+  const outOfStockCount = productsArray.filter(p => p.stock === 0).length
+  const totalProducts = productsArray.length
 
   const getStockStatus = (product) => {
     if (product.stock === 0) return { label: 'Sin stock', class: 'bg-red-100 text-red-800' }
@@ -167,60 +168,54 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-naf-black rounded-xl p-5 text-white"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-100 rounded-lg">
-              <Package className="w-6 h-6 text-red-600" />
-            </div>
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Sin Stock</p>
-              <p className="text-2xl font-bold text-gray-900">{outOfStockCount}</p>
+              <p className="text-gray-400 text-sm">Sin Stock</p>
+              <p className="text-3xl font-bold mt-1">{outOfStockCount}</p>
             </div>
+            <Package className="w-10 h-10 text-white/30" />
           </div>
         </motion.div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white border border-gray-200 rounded-xl p-5"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-orange-600" />
-            </div>
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Stock Bajo</p>
-              <p className="text-2xl font-bold text-gray-900">{lowStockCount}</p>
+              <p className="text-gray-500 text-sm">Stock Bajo</p>
+              <p className="text-3xl font-bold mt-1 text-orange-600">{lowStockCount}</p>
             </div>
+            <AlertTriangle className="w-10 h-10 text-gray-300" />
           </div>
         </motion.div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white border border-gray-200 rounded-xl p-5"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Package className="w-6 h-6 text-green-600" />
-            </div>
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Productos</p>
-              <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
+              <p className="text-gray-500 text-sm">Total Productos</p>
+              <p className="text-3xl font-bold mt-1 text-gray-900">{totalProducts}</p>
             </div>
+            <Package className="w-10 h-10 text-gray-300" />
           </div>
         </motion.div>
       </div>
 
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex gap-4 flex-1">
+      {/* Search & Filter */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -228,13 +223,13 @@ export default function InventoryPage() {
               placeholder="Buscar productos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-naf-black focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-naf-black focus:border-transparent bg-gray-50"
             />
           </div>
           <select
             value={filterStock}
             onChange={(e) => setFilterStock(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-naf-black focus:border-transparent"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-naf-black focus:border-transparent bg-gray-50"
           >
             <option value="all">Todo el stock</option>
             <option value="low">Stock bajo</option>
@@ -244,7 +239,7 @@ export default function InventoryPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100">
           {error}
         </div>
       )}

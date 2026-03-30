@@ -17,7 +17,7 @@ export default function Header() {
   const { wishlistCount } = useWishlist();
   const { openConfirm } = useModal();
 
-  const isAdmin = user && (user.roleId === 1 || user.role === 'admin');
+  const isAdmin = user && (user.roleId === 1 || user.dataValues?.roleId === 1 || user.role === 'admin');
 
   const handleLogout = async () => {
     const confirmed = await openConfirm({
@@ -168,14 +168,19 @@ export default function Header() {
 
             {/* User */}
             {user ? (
-              <div className="relative group">
+              <div className="relative group flex items-center gap-2">
+                <div className="text-right hidden sm:block">
+                  <p className="text-xs font-medium">{user.name}</p>
+                </div>
                 <button type="button" className="p-2 hover:bg-naf-light-gray rounded-full transition-colors">
                   <User className="w-5 h-5" />
                 </button>
                 {/* User dropdown */}
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white shadow-lg rounded-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                   <div className="px-4 py-3 border-b">
-                    <p className="text-sm font-medium">{user.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium">{user.name}</p>
+                    </div>
                     <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
                   <button 
@@ -281,7 +286,9 @@ export default function Header() {
               {user && (
                 <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
                   <div className="pb-2 mb-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                    </div>
                     <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
                   <button

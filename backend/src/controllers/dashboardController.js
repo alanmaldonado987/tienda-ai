@@ -82,6 +82,7 @@ exports.getStats = async (req, res, next) => {
       where: {
         createdAt: { [Op.gte]: last30Days }
       },
+      group: ['Order.id'],
       limit: 5,
       order: [[require('sequelize').fn('COUNT', require('sequelize').col('id')), 'DESC']]
     });
