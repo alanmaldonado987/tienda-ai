@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { productsAPI, recentlyViewedAPI } from '../services/api';
 import SizeGuide from './SizeGuide';
 import { ProductDetailSkeleton } from './Skeleton';
+import RelatedProducts from './RelatedProducts';
 import { motion } from 'framer-motion';
 
 export default function ProductDetail() {
@@ -337,6 +338,11 @@ export default function ProductDetail() {
       </div>
 
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
+      
+      <RelatedProducts 
+        currentProductId={product?.id} 
+        category={product?.category} 
+      />
     </div>
   );
 }
