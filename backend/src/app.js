@@ -32,6 +32,21 @@ const Order = require('./models/Order');
 const OrderItem = require('./models/OrderItem');
 const Coupon = require('./models/Coupon');
 const Category = require('./models/Category');
+const Collection = require('./models/Collection');
+const CollectionProduct = require('./models/CollectionProduct');
+
+// Set up associations
+Collection.belongsToMany(Product, { 
+  through: CollectionProduct, 
+  foreignKey: 'collectionId', 
+  as: 'products' 
+});
+Product.belongsToMany(Collection, { 
+  through: CollectionProduct, 
+  foreignKey: 'productId', 
+  as: 'collections' 
+});
+
 // RefreshToken se importa automáticamente cuando se usa en authService
 
 const app = express();
@@ -63,6 +78,7 @@ app.use('/api/config', configRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/collections', require('./routes/collectionRoutes'));
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/users', adminUserRoutes);

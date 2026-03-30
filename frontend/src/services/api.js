@@ -176,6 +176,20 @@ export const categoriesAPI = {
   delete: (id) => api.delete(`/categories/${id}`)
 };
 
+export const collectionsAPI = {
+  getAll: () => api.get('/collections'),
+  getActive: () => api.get('/collections/active'),
+  getFeatured: () => api.get('/collections/featured'),
+  getById: (id) => api.get(`/collections/${id}`),
+  getBySlug: (slug) => api.get(`/collections/slug/${slug}`),
+  create: (data) => api.post('/collections', data),
+  update: (id, data) => api.put(`/collections/${id}`, data),
+  delete: (id) => api.delete(`/collections/${id}`),
+  addProducts: (id, productIds) => api.post(`/collections/${id}/products`, { productIds }),
+  removeProduct: (id, productId) => api.delete(`/collections/${id}/products/${productId}`),
+  reorderProducts: (id, productIds) => api.put(`/collections/${id}/reorder`, { productIds })
+};
+
 export const couponsAPI = {
   getAll: () => api.get('/coupons'),
   getActive: () => api.get('/coupons/active'),

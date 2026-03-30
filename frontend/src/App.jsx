@@ -9,6 +9,7 @@ import { ModalProvider } from './components/ConfirmModal'
 import LoadingBar from './components/LoadingBar'
 import Header from './components/Header'
 import Banner from './components/Banner'
+import CollectionsCarousel from './components/CollectionsCarousel'
 import ProductGrid from './components/ProductGrid'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
@@ -26,6 +27,7 @@ import TitleUpdater from './components/TitleUpdater'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import PaymentResultPage from './pages/PaymentResultPage'
+import CollectionsPage from './pages/CollectionsPage'
 import PageTransition from './components/PageTransition'
 
 // Componente wrapper para animaciones
@@ -48,6 +50,7 @@ import AdminCategories from './pages/admin/CategoriesPage'
 import AdminInventory from './pages/admin/InventoryPage'
 import AdminConfig from './pages/admin/ConfigPage'
 import AdminReviews from './pages/admin/ReviewsPage'
+import AdminCollections from './pages/admin/CollectionsPage'
 
 function HomePage() {
   return (
@@ -55,6 +58,7 @@ function HomePage() {
       <Header />
       <main className="flex-1">
         <Banner />
+        <CollectionsCarousel />
         <ProductGrid />
       </main>
       <Footer />
@@ -145,6 +149,24 @@ function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/payment" element={<PaymentResultPage />} />
+                  <Route path="/collections" element={
+                    <div className="min-h-screen flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CollectionsPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  } />
+                  <Route path="/collections/:slug" element={
+                    <div className="min-h-screen flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CollectionsPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  } />
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
@@ -154,6 +176,7 @@ function App() {
                     <Route path="admin-orders" element={<AdminOrders />} />
                     <Route path="coupons" element={<AdminCoupons />} />
                     <Route path="categories" element={<AdminCategories />} />
+                    <Route path="collections" element={<AdminCollections />} />
                     <Route path="inventory" element={<AdminInventory />} />
                     <Route path="config" element={<AdminConfig />} />
                     <Route path="reviews" element={<AdminReviews />} />

@@ -10,12 +10,14 @@ import {
   Settings, 
   Star,
   LogOut,
-  Store
+  Store,
+  Layers
 } from 'lucide-react'
 
 const menuItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/products', label: 'Productos', icon: Package },
+  { path: '/admin/collections', label: 'Colecciones', icon: Layers },
   { path: '/admin/users', label: 'Usuarios', icon: Users },
   { path: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
   { path: '/admin/coupons', label: 'Cupones', icon: Tag },
