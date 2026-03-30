@@ -173,8 +173,8 @@ export default function Header() {
                   <User className="w-5 h-5" />
                 </button>
                 {/* User dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg rounded-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <div className="px-4 py-2 border-b">
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white shadow-lg rounded-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <div className="px-4 py-3 border-b">
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
@@ -215,12 +215,20 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-              <button 
-                onClick={() => navigate('/auth')}
-                className="p-2 hover:bg-naf-light-gray rounded-full transition-colors hidden sm:block"
-              >
-                <User className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => navigate('/auth', { state: { mode: 'login' } })}
+                  className="px-4 py-2 text-sm font-medium text-naf-black hover:bg-naf-light-gray rounded-lg transition-colors"
+                >
+                  Iniciar sesión
+                </button>
+                <button 
+                  onClick={() => navigate('/auth', { state: { mode: 'register' } })}
+                  className="px-4 py-2 text-sm font-medium bg-naf-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  Regístrarte
+                </button>
+              </div>
             )}
 
             {/* Wishlist */}
@@ -280,26 +288,44 @@ export default function Header() {
               ))}
               {user && (
                 <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
+                  <div className="pb-2 mb-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
                   <button
                     type="button"
-                    className="w-full text-left text-lg py-2"
+                    className="w-full text-left text-base py-2"
                     onClick={() => { navigate('/profile'); setMobileMenuOpen(false); }}
                   >
                     Mi perfil
                   </button>
+                  <button
+                    type="button"
+                    className="w-full text-left text-base py-2"
+                    onClick={() => { navigate('/orders'); setMobileMenuOpen(false); }}
+                  >
+                    Mis pedidos
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full text-left text-base py-2"
+                    onClick={() => { navigate('/settings'); setMobileMenuOpen(false); }}
+                  >
+                    Configuración
+                  </button>
                   {isAdmin && (
                     <button
                       type="button"
-                      className="w-full text-left text-lg py-2 font-medium flex items-center gap-2"
+                      className="w-full text-left text-base py-2 font-medium flex items-center gap-2"
                       onClick={() => { navigate('/admin'); setMobileMenuOpen(false); }}
                     >
                       <LayoutDashboard className="w-5 h-5" />
-                      Panel de administración
+                      Panel de Admin
                     </button>
                   )}
                   <button
                     type="button"
-                    className="w-full text-left text-lg py-2 text-red-600"
+                    className="w-full text-left text-base py-2 text-red-600"
                     onClick={async () => {
                       setMobileMenuOpen(false);
                       await handleLogout();
@@ -310,13 +336,22 @@ export default function Header() {
                 </div>
               )}
               {!user && (
-                <button
-                  type="button"
-                  className="w-full text-left text-lg py-2 mt-4 border-t border-gray-200 pt-4"
-                  onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }}
-                >
-                  Iniciar sesión
-                </button>
+                <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                  <button
+                    type="button"
+                    className="w-full text-left text-base py-2"
+                    onClick={() => { navigate('/auth', { state: { mode: 'login' } }); setMobileMenuOpen(false); }}
+                  >
+                    Iniciar sesión
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full text-left text-base py-2 px-4 bg-naf-black text-white rounded-lg"
+                    onClick={() => { navigate('/auth', { state: { mode: 'register' } }); setMobileMenuOpen(false); }}
+                  >
+                    Regístrarte
+                  </button>
+                </div>
               )}
             </nav>
           </div>
