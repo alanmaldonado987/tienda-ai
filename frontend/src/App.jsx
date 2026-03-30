@@ -21,6 +21,20 @@ import ProfilePage from './components/ProfilePage'
 import CheckoutPage from './components/CheckoutPage'
 import OrdersPage from './components/OrdersPage'
 import TitleUpdater from './components/TitleUpdater'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+
+// Admin Pages
+import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './pages/admin/DashboardPage'
+import AdminProducts from './pages/admin/ProductsPage'
+import AdminUsers from './pages/admin/UsersPage'
+import AdminOrders from './pages/admin/OrdersPage'
+import AdminCoupons from './pages/admin/CouponsPage'
+import AdminCategories from './pages/admin/CategoriesPage'
+import AdminInventory from './pages/admin/InventoryPage'
+import AdminConfig from './pages/admin/ConfigPage'
+import AdminReviews from './pages/admin/ReviewsPage'
 
 function HomePage() {
   return (
@@ -105,6 +119,21 @@ function App() {
                       <Footer />
                     </div>
                   } />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="admin-orders" element={<AdminOrders />} />
+                    <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="categories" element={<AdminCategories />} />
+                    <Route path="inventory" element={<AdminInventory />} />
+                    <Route path="config" element={<AdminConfig />} />
+                    <Route path="reviews" element={<AdminReviews />} />
+                  </Route>
                 </Routes>
                 <FlyingProduct />
                 <SupportChat />

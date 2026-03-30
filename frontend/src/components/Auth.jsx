@@ -27,10 +27,14 @@ export default function Auth() {
     rememberMe: false
   });
 
-  // Si ya está logueado, redirigir al home
+  // Si ya está logueado, redirigir según el rol
   useEffect(() => {
     if (user) {
-      navigate('/');
+      if (user.roleId === 1) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     }
   }, [user, navigate]);
 
@@ -81,7 +85,13 @@ export default function Auth() {
       const result = await login(formData.email, formData.password);
       if (result.success) {
         success('¡Bienvenido de vuelta!');
-        navigate('/');
+        // Si es admin, redirigir al panel de admin
+        const userData = JSON.parse(localStorage.getItem('nafnaf-user'));
+        if (userData && userData.roleId === 1) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         showError(result.message || 'Credenciales inválidas');
       }
@@ -316,9 +326,9 @@ export default function Auth() {
                     Recordarme
                   </label>
                 </div>
-                <a href="#" className="text-xs text-gray-500 hover:text-naf-black transition-colors">
+                <Link to="/forgot-password" className="text-xs text-gray-500 hover:text-naf-black transition-colors">
                   ¿Olvidaste tu contraseña?
-                </a>
+                </Link>
               </div>
             )}
 

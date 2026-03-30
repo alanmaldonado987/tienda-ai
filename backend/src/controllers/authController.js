@@ -8,7 +8,6 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, phone, password } = req.body;
 
-    // Validar campos requeridos
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -38,7 +37,6 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Validar campos
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -78,6 +76,49 @@ exports.getMe = async (req, res, next) => {
     res.status(status).json({
       success: false,
       message: error.message || 'Error al obtener usuario'
+    });
+  }
+};
+
+/**
+ * Solicitar reset de contraseña
+ */
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const result = await authService.forgotPassword(email);
+
+    res.json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Error al solicitar reset de contraseña'
+    });
+  }
+};
+
+/**
+ * Restablecer contraseña con token
+ */
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+
+    const result = await authService.resetPassword(token, password);
+
+    res.json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    const status = error.message.includes('expirado') ? 400 : 400;
+    res.status(status).json({
+      success: false,
+      message: error.message || 'Error al restablecer contraseña'
     });
   }
 };

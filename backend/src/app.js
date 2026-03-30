@@ -26,25 +26,21 @@ const OrderItem = require('./models/OrderItem');
 
 const app = express();
 
-// Middlewares de seguridad
 app.use(helmet());
 app.use(cors({
   origin: config.cors.origin,
   credentials: true
 }));
 
-// Middleware de logging
 if (config.nodeEnv === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
-// Middleware para parsear JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas API
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/wishlist', wishlistRoutes);
@@ -54,14 +50,10 @@ app.use('/api/support', supportRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/config', configRoutes);
 
-// TEST: Direct inline route
 app.get('/api/direct-test', (req, res) => {
   res.json({ message: 'Direct test works!' });
 });
 
-console.log('✅ Routes registered');
-
-// Health check con estado de DB
 app.get('/health', async (req, res) => {
   let dbStatus = 'disconnected';
   let configData = {};
@@ -83,7 +75,6 @@ app.get('/health', async (req, res) => {
   });
 });
 
-// Ruta 404
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -91,30 +82,44 @@ app.use((req, res) => {
   });
 });
 
-// Middleware de manejo de errores
 app.use(errorHandler);
 
-// Función para iniciar el servidor
 const startServer = async () => {
   try {
-    // Autenticar conexión a DB
     await sequelize.authenticate();
-    console.log('✅ Database connected successfully');
     
-    // Sync modelos (solo crea si no existen, no modifica estructura)
+    try {
+      await sequelize.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS "reset_password_token" TEXT,
+        ADD COLUMN IF NOT EXISTS "reset_password_expires" TIMESTAMP;
+      `);
+
+      await sequelize.query(`
+        ALTER TABLE users 
+        ALTER COLUMN "reset_password_token" TYPE TEXT;
+      `);
+
+      await sequelize.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS "resetPasswordToken" TEXT,
+        ADD COLUMN IF NOT EXISTS "resetPasswordExpires" TIMESTAMP;
+      `);
+
+      await sequelize.query(`
+        ALTER TABLE users 
+        ALTER COLUMN "resetPasswordToken" TYPE TEXT;
+      `);
+    } catch (err) {
+      console.error('❌ Error configurando campos de reset password:', err.message);
+    }
+    
     await sequelize.sync({ alter: false });
-    console.log('✅ Models synchronized');
-    
-    // Cargar roles iniciales si no existen
     await Role.seedInitial();
-    
-    // Cargar productos iniciales si no existen
     await Product.seedInitial();
     
-    // Obtener app name para el banner
     const appName = await SystemConfig.getValue('app_name') || 'MODACOLOMBIA';
     
-    // Iniciar servidor
     app.listen(config.port, () => {
       console.log(`
   ╔═══════════════════════════════════════════════════╗
@@ -142,7 +147,6 @@ const startServer = async () => {
   }
 };
 
-// Iniciar
 startServer();
 
 module.exports = app;

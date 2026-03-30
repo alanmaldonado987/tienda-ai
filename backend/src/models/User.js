@@ -37,6 +37,14 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 2 // Por defecto 'user' (id: 2)
+  },
+  resetPasswordToken: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   tableName: 'users',
