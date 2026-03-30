@@ -104,6 +104,7 @@ export default function RecentlyViewed() {
                       <img
                         src={images[0]}
                         alt={product.name}
+                        loading="lazy"
                         className="w-20 h-24 object-cover rounded"
                       />
                       <div className="flex-1">

@@ -197,6 +197,7 @@ export default function ProductDetail() {
                   <img
                     src={img}
                     alt={`Miniatura ${idx + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </button>

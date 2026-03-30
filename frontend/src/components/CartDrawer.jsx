@@ -68,6 +68,7 @@ export default function CartDrawer() {
                     <img
                       src={item.image}
                       alt={item.name}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   </div>
