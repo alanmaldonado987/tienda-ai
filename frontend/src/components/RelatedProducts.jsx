@@ -3,23 +3,20 @@ import { productsAPI } from '../services/api'
 import ProductCard from './ProductCard'
 import { motion } from 'framer-motion'
 
-export default function RelatedProducts({ currentProductId, category, limit = 4 }) {
+export default function RelatedProducts({ currentProductId, category, gender, limit = 4 }) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (category) {
+    if (currentProductId) {
       fetchRelatedProducts()
     }
-  }, [category, currentProductId])
+  }, [currentProductId, category, gender])
 
   const fetchRelatedProducts = async () => {
     try {
-      const response = await productsAPI.getAll({ category, limit: limit + 5 })
-      const filtered = (response.data.data || [])
-        .filter(p => p.id !== currentProductId)
-        .slice(0, limit)
-      setProducts(filtered)
+      const response = await productsAPI.getRelated(currentProductId, category, gender, limit)
+      setProducts(response.data.data || [])
     } catch (err) {
       console.error('Error fetching related products:', err)
     } finally {

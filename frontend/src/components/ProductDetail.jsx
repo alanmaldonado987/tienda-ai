@@ -341,7 +341,8 @@ export default function ProductDetail() {
       
       <RelatedProducts 
         currentProductId={product?.id} 
-        category={product?.category} 
+        category={product?.category}
+        gender={product?.gender}
       />
     </div>
   );

@@ -48,7 +48,7 @@ export default function RecentlyViewed() {
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 w-14 h-14 bg-naf-black text-white rounded-full shadow-xl flex items-center justify-center hover:bg-naf-gray transition-colors"
+        className="fixed bottom-24 right-6 z-40 w-14 h-14 bg-naf-black text-white rounded-full shadow-xl flex items-center justify-center hover:bg-naf-gray transition-colors"
       >
         <Clock className="w-6 h-6" />
       </button>

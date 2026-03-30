@@ -17,6 +17,7 @@ const { auth, optionalAuth } = require('../middleware/auth');
 router.get('/category/:category', productController.getProductsByCategory);
 router.get('/new', productController.getNewProducts);
 router.get('/sale', productController.getOnSaleProducts);
+router.get('/related', productController.getRelatedProducts);
 router.get('/:id', productController.getProductById);
 router.get('/', optionalAuth, productController.getProducts);
 

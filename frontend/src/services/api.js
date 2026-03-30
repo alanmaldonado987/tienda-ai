@@ -123,6 +123,8 @@ export const productsAPI = {
   getAll: (params) => api.get('/products', { params }),
   getById: (id) => api.get(`/products/${id}`),
   getByCategory: (category) => api.get(`/products/category/${category}`),
+  getRelated: (productId, category, gender, limit) => 
+    api.get('/products/related', { params: { productId, category, gender, limit } }),
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
   delete: (id) => api.delete(`/products/${id}`)

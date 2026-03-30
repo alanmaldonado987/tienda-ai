@@ -371,3 +371,87 @@ exports.getOnSaleProducts = async (req, res) => {
     });
   }
 };
+
+/**
+ * Obtener productos relacionados (por categoría, luego género, luego random)
+ */
+exports.getRelatedProducts = async (req, res) => {
+  try {
+    const { productId, category, gender, limit = 4 } = req.query;
+    
+    if (!productId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'productId es requerido' 
+      });
+    }
+
+    const limitNum = parseInt(limit);
+    let relatedProducts = [];
+
+    // 1. Buscar por misma categoría (excluyendo el producto actual)
+    if (category) {
+      const byCategory = await Product.findAll({
+        where: {
+          category,
+          id: { [require('sequelize').Op.ne]: productId },
+          isActive: true
+        },
+        order: [['createdAt', 'DESC']],
+        limit: limitNum * 2
+      });
+      relatedProducts = [...byCategory];
+    }
+
+    // 2. Si no hay suficientes, buscar por mismo género
+    if (relatedProducts.length < limitNum && gender) {
+      const byGender = await Product.findAll({
+        where: {
+          gender: { [require('sequelize').Op.or]: [gender, 'unisex'] },
+          id: { [require('sequelize').Op.ne]: productId },
+          isActive: true,
+          ...(category && { category: { [require('sequelize').Op.ne]: category } })
+        },
+        order: [['createdAt', 'DESC']],
+        limit: (limitNum - relatedProducts.length) * 2
+      });
+      
+      const existingIds = new Set(relatedProducts.map(p => p.id));
+      byGender.forEach(p => {
+        if (!existingIds.has(p.id)) {
+          relatedProducts.push(p);
+        }
+      });
+    }
+
+    // 3. Si aún no hay suficientes, buscar random
+    if (relatedProducts.length < limitNum) {
+      const remaining = limitNum - relatedProducts.length;
+      const existingIds = new Set(relatedProducts.map(p => p.id));
+      existingIds.add(productId);
+      
+      const random = await Product.findAll({
+        where: {
+          id: { [require('sequelize').Op.notIn]: Array.from(existingIds) },
+          isActive: true
+        },
+        order: require('sequelize').literal('RANDOM()'),
+        limit: remaining
+      });
+      relatedProducts = [...relatedProducts, ...random];
+    }
+
+    const finalProducts = relatedProducts.slice(0, limitNum).map(p => Product.addImagesField(p));
+    
+    res.json({
+      success: true,
+      data: finalProducts,
+      count: finalProducts.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
