@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { useConfig } from '../context/ConfigContext';
 
@@ -60,13 +61,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold tracking-wider mb-4">EMPRESA</h3>
             <ul className="space-y-2">
-              {footerLinks.empresa.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/about" className="text-sm text-gray-400 hover:text-white transition-colors">Quiénes somos</Link></li>
+              <li><Link to="/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Trabaja con nosotros</Link></li>
+              <li><Link to="/sustainability" className="text-sm text-gray-400 hover:text-white transition-colors">Sostenibilidad</Link></li>
+              <li><Link to="/news" className="text-sm text-gray-400 hover:text-white transition-colors">Noticias</Link></li>
             </ul>
           </div>
 
@@ -74,13 +72,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold tracking-wider mb-4">AYUDA</h3>
             <ul className="space-y-2">
-              {footerLinks.ayuda.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/faq" className="text-sm text-gray-400 hover:text-white transition-colors">Preguntas frecuentes</Link></li>
+              <li><Link to="/shipping" className="text-sm text-gray-400 hover:text-white transition-colors">Envíos y entregas</Link></li>
+              <li><Link to="/returns" className="text-sm text-gray-400 hover:text-white transition-colors">Cambios y devoluciones</Link></li>
+              <li><Link to="/size-guide" className="text-sm text-gray-400 hover:text-white transition-colors">Guía de tallas</Link></li>
             </ul>
           </div>
 
@@ -88,13 +83,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold tracking-wider mb-4">LEGAL</h3>
             <ul className="space-y-2">
-              {footerLinks.legal.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">Términos y condiciones</Link></li>
+              <li><Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">Política de privacidad</Link></li>
+              <li><Link to="/cookies" className="text-sm text-gray-400 hover:text-white transition-colors">Política de cookies</Link></li>
+              <li><Link to="/legal" className="text-sm text-gray-400 hover:text-white transition-colors">Aviso legal</Link></li>
             </ul>
           </div>
         </div>

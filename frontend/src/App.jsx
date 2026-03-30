@@ -33,6 +33,18 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import PaymentResultPage from './pages/PaymentResultPage'
 import CollectionsPage from './pages/CollectionsPage'
+import AboutPage from './pages/AboutPage'
+import CareersPage from './pages/CareersPage'
+import SustainabilityPage from './pages/SustainabilityPage'
+import NewsPage from './pages/NewsPage'
+import FAQPage from './pages/FAQPage'
+import ShippingPage from './pages/ShippingPage'
+import ReturnsPage from './pages/ReturnsPage'
+import SizeGuidePage from './pages/SizeGuidePage'
+import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
+import CookiesPage from './pages/CookiesPage'
+import LegalPage from './pages/LegalPage'
 import PageTransition from './components/PageTransition'
 
 // Componente wrapper para animaciones
@@ -179,6 +191,21 @@ function App() {
                       <Footer />
                     </div>
                   } />
+                  {/* Footer Pages - Empresa */}
+                  <Route path="/about" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><AboutPage /></main><Footer /></div>} />
+                  <Route path="/careers" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><CareersPage /></main><Footer /></div>} />
+                  <Route path="/sustainability" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><SustainabilityPage /></main><Footer /></div>} />
+                  <Route path="/news" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><NewsPage /></main><Footer /></div>} />
+                  {/* Footer Pages - Ayuda */}
+                  <Route path="/faq" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><FAQPage /></main><Footer /></div>} />
+                  <Route path="/shipping" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><ShippingPage /></main><Footer /></div>} />
+                  <Route path="/returns" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><ReturnsPage /></main><Footer /></div>} />
+                  <Route path="/size-guide" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><SizeGuidePage /></main><Footer /></div>} />
+                  {/* Footer Pages - Legal */}
+                  <Route path="/terms" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><TermsPage /></main><Footer /></div>} />
+                  <Route path="/privacy" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><PrivacyPage /></main><Footer /></div>} />
+                  <Route path="/cookies" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><CookiesPage /></main><Footer /></div>} />
+                  <Route path="/legal" element={<div className="min-h-screen flex flex-col"><Header /><main className="flex-1"><LegalPage /></main><Footer /></div>} />
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
