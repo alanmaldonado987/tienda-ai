@@ -3,7 +3,9 @@
  */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
+const RefreshToken = require('../models/RefreshToken');
 const config = require('../config');
 const EmailService = require('./emailService');
 
@@ -45,9 +47,10 @@ class AuthService {
    * Iniciar sesión
    * @param {string} email - Email del usuario
    * @param {string} password - Contraseña
+   * @param {Object} options - Opciones adicionales (recordMe, userAgent, ipAddress)
    * @returns {Promise<Object>}
    */
-  async login(email, password) {
+  async login(email, password, options = {}) {
     if (!email || !password) {
       throw new Error('Por favor proporcione email y contraseña');
     }
@@ -64,10 +67,116 @@ class AuthService {
       throw new Error('Credenciales inválidas');
     }
 
-    // Generar token
+    // Generar token JWT
     const token = this.generateToken(user);
 
-    return this.formatUserResponse(user, token);
+    // Si recordMe está activo, generar refresh token
+    let refreshToken = null;
+    if (options.recordMe) {
+      refreshToken = await this.generateRefreshToken(user, options);
+    }
+
+    return this.formatUserResponse(user, token, refreshToken);
+  }
+
+  /**
+   * Generar refresh token
+   * @param {Object} user - Datos del usuario
+   * @param {Object} options - userAgent, ipAddress
+   * @returns {Promise<string>} Token string
+   */
+  async generateRefreshToken(user, options = {}) {
+    // Generar token aleatorio
+    const token = crypto.randomBytes(64).toString('hex');
+    
+    // Expira en 30 días
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    // Guardar en BD (usar camelCase - Sequelize convierte a snake_case)
+    await RefreshToken.create({
+      token,
+      userId: user.id,
+      expiresAt: expiresAt,
+      userAgent: options.userAgent?.substring(0, 500) || null,
+      ipAddress: options.ipAddress || null
+    });
+
+    return token;
+  }
+
+  /**
+   * Refrescar token JWT usando refresh token
+   * @param {string} refreshToken - Refresh token
+   * @returns {Promise<Object>} Nuevo JWT y nuevo refresh token
+   */
+  async refreshAccessToken(refreshToken) {
+    if (!refreshToken) {
+      throw new Error('Refresh token requerido');
+    }
+
+    // Verificar si el token existe y es válido
+    const isValid = await RefreshToken.isValid(refreshToken);
+    if (!isValid) {
+      throw new Error('Refresh token inválido o expirado');
+    }
+
+    // Obtener el registro del token
+    const tokenRecord = await RefreshToken.findOne({ 
+      where: { token: refreshToken }
+    });
+
+    // Obtener usuario
+    const user = await User.findById(tokenRecord.userId);
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    // Generar nuevo JWT
+    const newJwt = this.generateToken(user);
+
+    // Rotar refresh token (opcional pero más seguro)
+    // Invalidar el viejo
+    await tokenRecord.update({ isRevoked: true });
+    
+    // Crear nuevo refresh token
+    const newRefreshToken = await this.generateRefreshToken(user, {
+      userAgent: tokenRecord.userAgent,
+      ipAddress: tokenRecord.ipAddress
+    });
+
+    return {
+      token: newJwt,
+      refreshToken: newRefreshToken
+    };
+  }
+
+  /**
+   * Cerrar sesión - invalidar refresh token
+   * @param {string} refreshToken - Refresh token a invalidar
+   * @returns {Promise<Object>}
+   */
+  async logout(refreshToken) {
+    if (refreshToken) {
+      // Invalidar el refresh token específico
+      await RefreshToken.update(
+        { isRevoked: true },
+        { where: { token: refreshToken } }
+      );
+    }
+    return { message: 'Sesión cerrada exitosamente' };
+  }
+
+  /**
+   * Cerrar sesión en todos los dispositivos
+   * @param {string} userId - ID del usuario
+   * @returns {Promise<Object>}
+   */
+  async logoutAll(userId) {
+    await RefreshToken.update(
+      { isRevoked: true },
+      { where: { userId: userId } }
+    );
+    return { message: 'Sesión cerrada en todos los dispositivos' };
   }
 
   /**
@@ -101,14 +210,19 @@ class AuthService {
    * Formatear respuesta sin contraseña
    * @param {Object} user - Datos del usuario
    * @param {string} token - Token JWT
+   * @param {string} refreshToken - Refresh token (opcional)
    * @returns {Object}
    */
-  formatUserResponse(user, token) {
+  formatUserResponse(user, token, refreshToken = null) {
     const { password, ...userWithoutPassword } = user;
-    return {
+    const response = {
       user: userWithoutPassword,
       token
     };
+    if (refreshToken) {
+      response.refreshToken = refreshToken;
+    }
+    return response;
   }
 
   /**

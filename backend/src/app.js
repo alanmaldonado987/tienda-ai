@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 const config = require('./config');
 const errorHandler = require('./middleware/errorHandler');
@@ -23,6 +24,7 @@ const Wishlist = require('./models/Wishlist');
 const CartItem = require('./models/CartItem');
 const Order = require('./models/Order');
 const OrderItem = require('./models/OrderItem');
+// RefreshToken se importa automáticamente cuando se usa en authService
 
 const app = express();
 
@@ -40,6 +42,7 @@ if (config.nodeEnv === 'development') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -88,33 +91,40 @@ const startServer = async () => {
   try {
     await sequelize.authenticate();
     
+    // Configurar campos de reset password
     try {
-      await sequelize.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS "reset_password_token" TEXT,
-        ADD COLUMN IF NOT EXISTS "reset_password_expires" TIMESTAMP;
-      `);
-
-      await sequelize.query(`
-        ALTER TABLE users 
-        ALTER COLUMN "reset_password_token" TYPE TEXT;
-      `);
-
       await sequelize.query(`
         ALTER TABLE users 
         ADD COLUMN IF NOT EXISTS "resetPasswordToken" TEXT,
         ADD COLUMN IF NOT EXISTS "resetPasswordExpires" TIMESTAMP;
       `);
-
-      await sequelize.query(`
-        ALTER TABLE users 
-        ALTER COLUMN "resetPasswordToken" TYPE TEXT;
-      `);
+      console.log('✅ Campos de reset password configurados');
     } catch (err) {
-      console.error('❌ Error configurando campos de reset password:', err.message);
+      console.log('ℹ️  Campos de reset password:', err.message);
     }
-    
+
+    // Sincronizar modelos
     await sequelize.sync({ alter: false });
+    
+    // Crear tabla refresh_tokens si no existe (SQL directo)
+    try {
+      await sequelize.query(`
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          token VARCHAR(500) UNIQUE NOT NULL,
+          user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          expires_at TIMESTAMP NOT NULL,
+          user_agent VARCHAR(500),
+          ip_address VARCHAR(45),
+          is_revoked BOOLEAN DEFAULT false,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      console.log('✅ Tabla refresh_tokens lista');
+    } catch (err) {
+      console.log('ℹ️  Tabla refresh_tokens:', err.message);
+    }
     await Role.seedInitial();
     await Product.seedInitial();
     

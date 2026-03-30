@@ -1,15 +1,29 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-let isRedirecting = false;
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true // Importante para enviar cookies
 });
 
+// Request interceptor - agregar JWT
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('nafnaf-token');
@@ -23,23 +37,71 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor - manejar 401 con refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (isRedirecting) {
-      return Promise.reject(error);
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Si es 401 y no es una petición de refresh o login
+    if (error.response?.status === 401 && 
+        !originalRequest._retry &&
+        !originalRequest.url.includes('/auth/refresh') &&
+        !originalRequest.url.includes('/auth/login') &&
+        !originalRequest.url.includes('/auth/register')) {
+      
+      // Si ya está refrescando, agregar a la cola
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        }).catch(err => {
+          return Promise.reject(err);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Intentar refresh del token
+        const response = await axios.post(
+          `${API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        const { token } = response.data.data;
+        
+        // Guardar nuevo token
+        localStorage.setItem('nafnaf-token', token);
+        
+        // Reintentar las peticiones fallidas
+        processQueue(null, token);
+        
+        // Reintentar la petición original
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+        
+      } catch (refreshError) {
+        // Refresh falló, limpiar y redirigir al login
+        processQueue(refreshError, null);
+        localStorage.removeItem('nafnaf-token');
+        localStorage.removeItem('nafnaf-user');
+        
+        // Solo redirigir si no estamos ya en /auth
+        if (window.location.pathname !== '/auth') {
+          window.location.replace('/auth');
+        }
+        
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
-    if (window.location.pathname === '/auth') {
-      return Promise.reject(error);
-    }
-
-    if (error.response?.status === 401) {
-      isRedirecting = true;
-      localStorage.removeItem('nafnaf-token');
-      localStorage.removeItem('nafnaf-user');
-      window.location.replace('/auth');
-    }
     return Promise.reject(error);
   }
 );
@@ -47,6 +109,9 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
+  logout: () => api.post('/auth/logout'),
+  logoutAll: () => api.post('/auth/logout-all'),
+  refresh: () => api.post('/auth/refresh'),
   getMe: () => api.get('/auth/me'),
   updateProfile: (data) => api.put('/users/profile', data),
   changePassword: (data) => api.put('/users/password', data),

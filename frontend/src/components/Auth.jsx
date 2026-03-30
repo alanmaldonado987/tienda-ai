@@ -82,7 +82,8 @@ export default function Auth() {
     if (!validateForm()) return;
     
     if (isLogin) {
-      const result = await login(formData.email, formData.password);
+      // Pasar recordMe al login para generar refresh token
+      const result = await login(formData.email, formData.password, formData.rememberMe);
       if (result.success) {
         success('¡Bienvenido de vuelta!');
         // Si es admin, redirigir al panel de admin
