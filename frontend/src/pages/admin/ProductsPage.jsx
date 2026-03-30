@@ -715,7 +715,7 @@ export default function ProductsPage() {
         {showModal && (
           <ProductModal
             product={editingProduct}
-            categories={allCategories}
+            categories={categories}
             onSave={handleSave}
             onClose={() => { setShowModal(false); setEditingProduct(null) }}
           />

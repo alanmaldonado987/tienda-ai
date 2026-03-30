@@ -30,16 +30,9 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, phone } = req.body;
+    const { name, email, phone, avatar } = req.body;
 
-    if (!name || !email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Nombre y email son requeridos'
-      });
-    }
-
-    const user = await userService.updateProfile(userId, { name, email, phone });
+    const user = await userService.updateProfile(userId, { name, email, phone, avatar });
 
     res.json({
       success: true,

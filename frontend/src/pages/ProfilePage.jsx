@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/api';
@@ -20,11 +20,25 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
+  // Get user data from either direct property or dataValues (Sequelize)
+  const userData = user?.dataValues || user;
+  
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.phone || ''
+    name: userData?.name || '',
+    email: userData?.email || '',
+    phone: userData?.phone || ''
   });
+
+  useEffect(() => {
+    const data = user?.dataValues || user;
+    if (data) {
+      setFormData({
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || ''
+      });
+    }
+  }, [user]);
   
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
@@ -156,15 +170,15 @@ export default function ProfilePage() {
                       alt="Avatar preview" 
                       className="w-full h-full object-cover"
                     />
-                  ) : user?.avatar ? (
+                  ) : userData?.avatar ? (
                     <img 
-                      src={user.avatar} 
-                      alt={user.name} 
+                      src={userData.avatar} 
+                      alt={userData.name} 
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-naf-black text-white flex items-center justify-center text-5xl font-semibold">
-                      {user.name?.charAt(0).toUpperCase()}
+                      {userData?.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   )}
                 </div>
@@ -224,12 +238,12 @@ export default function ProfilePage() {
                       type="text"
                       name="name"
                       value={formData.name}
-                      onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-naf-black focus:ring-2 focus:ring-naf-black/10 transition-colors"
+                      readOnly
+                      className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
                       placeholder="Tu nombre completo"
-                      required
                     />
                   </div>
+                  <p className="text-sm text-gray-400 mt-2">El nombre no se puede cambiar</p>
                 </div>
 
                 <div>
@@ -243,7 +257,6 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-naf-black focus:ring-2 focus:ring-naf-black/10 transition-colors"
                       placeholder="tu@email.com"
-                      required
                     />
                   </div>
                 </div>

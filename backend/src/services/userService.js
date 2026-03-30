@@ -35,11 +35,17 @@ class UserService {
   async updateProfile(id, data) {
     const { name, email, phone, avatar } = data;
 
+    // Filter out undefined values (name is not updatable from profile)
+    const updateData = {};
+    if (email !== undefined && email !== '') updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (avatar !== undefined) updateData.avatar = avatar;
+
     // Verificar si el nuevo email ya está en uso por otro usuario
-    if (email) {
+    if (updateData.email) {
       const { Op } = require('sequelize');
       const existingUser = await User.findOne({
-        where: { email, id: { [Op.ne]: id } }
+        where: { email: updateData.email, id: { [Op.ne]: id } }
       });
       
       if (existingUser) {
@@ -47,7 +53,7 @@ class UserService {
       }
     }
 
-    const user = await User.updateUser(id, { name, email, phone, avatar });
+    const user = await User.updateUser(id, updateData);
     const role = await Role.findByPk(user.roleId);
     const { password, ...userData } = user;
 
