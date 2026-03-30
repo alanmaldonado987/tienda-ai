@@ -215,20 +215,12 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => navigate('/auth', { state: { mode: 'login' } })}
-                  className="px-4 py-2 text-sm font-medium text-naf-black hover:bg-naf-light-gray rounded-lg transition-colors"
-                >
-                  Iniciar sesión
-                </button>
-                <button 
-                  onClick={() => navigate('/auth', { state: { mode: 'register' } })}
-                  className="px-4 py-2 text-sm font-medium bg-naf-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  Regístrarte
-                </button>
-              </div>
+              <button 
+                onClick={() => navigate('/auth')}
+                className="px-4 py-2 text-sm font-medium bg-naf-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Iniciar sesión
+              </button>
             )}
 
             {/* Wishlist */}
@@ -336,22 +328,13 @@ export default function Header() {
                 </div>
               )}
               {!user && (
-                <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                  <button
-                    type="button"
-                    className="w-full text-left text-base py-2"
-                    onClick={() => { navigate('/auth', { state: { mode: 'login' } }); setMobileMenuOpen(false); }}
-                  >
-                    Iniciar sesión
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full text-left text-base py-2 px-4 bg-naf-black text-white rounded-lg"
-                    onClick={() => { navigate('/auth', { state: { mode: 'register' } }); setMobileMenuOpen(false); }}
-                  >
-                    Regístrarte
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="w-full text-left text-base py-2 px-4 bg-naf-black text-white rounded-lg mt-4 pt-4 border-t border-gray-200"
+                  onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }}
+                >
+                  Iniciar sesión
+                </button>
               )}
             </nav>
           </div>
