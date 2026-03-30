@@ -4,6 +4,22 @@
 const Product = require('../models/Product');
 
 class ProductService {
+  normalizeProductInput(data = {}) {
+    const normalized = { ...data };
+    if (Array.isArray(normalized.images) && normalized.images.length > 0) {
+      const validImages = normalized.images
+        .filter((item) => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter((item) => item && item !== 'undefined' && item !== 'null');
+
+      if (validImages.length > 0) {
+        normalized.image = JSON.stringify(validImages);
+      }
+      delete normalized.images;
+    }
+    return normalized;
+  }
+
   /**
    * Obtener todos los productos con filtros y ordenamiento
    * @param {Object} filters - Filtros (category, gender, search, sort)
@@ -17,7 +33,7 @@ class ProductService {
     if (gender) queryFilters.gender = gender;
     if (search) queryFilters.search = search;
 
-    let products = await Product.findAll(queryFilters);
+    let products = await Product.findWithFilters(queryFilters);
 
     // Ordenar resultados
     if (sort) {
@@ -67,7 +83,7 @@ class ProductService {
    * @returns {Promise<Object>}
    */
   async create(data) {
-    return await Product.create(data);
+    return await Product.create(this.normalizeProductInput(data));
   }
 
   /**
@@ -77,7 +93,7 @@ class ProductService {
    * @returns {Promise<Object>}
    */
   async update(id, data) {
-    const product = await Product.updateProduct(id, data);
+    const product = await Product.updateProduct(id, this.normalizeProductInput(data));
     if (!product) {
       throw new Error('Producto no encontrado');
     }
@@ -92,6 +108,29 @@ class ProductService {
   async delete(id) {
     await Product.deleteProduct(id);
     return true;
+  }
+
+  /**
+   * Obtener todos los productos con info de inventario
+   * @returns {Promise<Array>}
+   */
+  async getAllInventory() {
+    return await Product.findAll({
+      attributes: ['id', 'name', 'price', 'stock', 'lowStockThreshold', 'isActive', 'updatedAt'],
+      order: [['stock', 'ASC']]
+    });
+  }
+
+  /**
+   * Obtener productos con stock bajo
+   * @returns {Promise<Array>}
+   */
+  async getLowStock() {
+    return await Product.findAll({
+      attributes: ['id', 'name', 'price', 'stock', 'lowStockThreshold', 'updatedAt'],
+      where: require('sequelize').literal('stock <= "low_stock_threshold"'),
+      order: [['stock', 'ASC']]
+    });
   }
 }
 

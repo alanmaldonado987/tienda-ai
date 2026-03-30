@@ -16,6 +16,11 @@ const userRoutes = require('./routes/userRoutes');
 const supportRoutes = require('./routes/supportRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const configRoutes = require('./routes/configRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const couponRoutes = require('./routes/couponRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const sequelize = require('./config/database');
 const Product = require('./models/Product');
 const SystemConfig = require('./models/SystemConfig');
@@ -24,6 +29,8 @@ const Wishlist = require('./models/Wishlist');
 const CartItem = require('./models/CartItem');
 const Order = require('./models/Order');
 const OrderItem = require('./models/OrderItem');
+const Coupon = require('./models/Coupon');
+const Category = require('./models/Category');
 // RefreshToken se importa automáticamente cuando se usa en authService
 
 const app = express();
@@ -52,6 +59,11 @@ app.use('/api/users', userRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/direct-test', (req, res) => {
   res.json({ message: 'Direct test works!' });

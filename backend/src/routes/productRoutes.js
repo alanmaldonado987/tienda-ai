@@ -14,13 +14,13 @@ const { auth, optionalAuth } = require('../middleware/auth');
  */
 
 // Rutas públicas
-router.get('/', optionalAuth, productController.getProducts);
 router.get('/category/:category', productController.getProductsByCategory);
 router.get('/:id', productController.getProductById);
+router.get('/', optionalAuth, productController.getProducts);
 
-// Rutas protegidas (admin)
-// router.post('/', auth, productController.createProduct);
-// router.put('/:id', auth, productController.updateProduct);
-// router.delete('/:id', auth, productController.deleteProduct);
+// Rutas de admin
+router.post('/', auth, productController.createProduct);
+router.put('/:id', auth, productController.updateProduct);
+router.delete('/:id', auth, productController.deleteProduct);
 
 module.exports = router;

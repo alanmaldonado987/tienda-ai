@@ -164,4 +164,40 @@ export const configAPI = {
   getValue: (key) => api.get(`/config/${key}`)
 };
 
+export const categoriesAPI = {
+  getAll: () => api.get('/categories'),
+  getById: (id) => api.get(`/categories/${id}`),
+  create: (data) => api.post('/categories', data),
+  update: (id, data) => api.put(`/categories/${id}`, data),
+  delete: (id) => api.delete(`/categories/${id}`)
+};
+
+export const couponsAPI = {
+  getAll: () => api.get('/coupons'),
+  getActive: () => api.get('/coupons/active'),
+  getById: (id) => api.get(`/coupons/${id}`),
+  create: (data) => api.post('/coupons', data),
+  update: (id, data) => api.put(`/coupons/${id}`, data),
+  delete: (id) => api.delete(`/coupons/${id}`),
+  validate: (code, purchaseAmount) => api.post('/coupons/validate', { code, purchaseAmount })
+};
+
+export const inventoryAPI = {
+  getAll: () => api.get('/inventory'),
+  getLowStock: () => api.get('/inventory/low-stock'),
+  getById: (id) => api.get(`/inventory/${id}`),
+  update: (id, data) => api.put(`/inventory/${id}`, data),
+  adjust: (id, adjustment, reason) => api.post(`/inventory/${id}/adjust`, { adjustment, reason })
+};
+
+export const dashboardAPI = {
+  getStats: () => api.get('/dashboard/stats'),
+  getSalesChart: (days) => api.get('/dashboard/sales-chart', { params: { days } })
+};
+
+export const adminOrdersAPI = {
+  getAll: () => api.get('/orders/admin/all'),
+  updateStatus: (id, status) => api.put(`/orders/admin/${id}/status`, { status })
+};
+
 export default api;

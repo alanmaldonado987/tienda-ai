@@ -1,4 +1,5 @@
 const productService = require('../services/productService');
+const Product = require('../models/Product');
 
 /**
  * Obtener todos los productos
@@ -14,16 +15,17 @@ exports.getProducts = async (req, res, next) => {
     if (sort) filters.sort = sort;
 
     const products = await productService.getAll(filters);
+    const productsWithImages = products.map(p => Product.addImagesField(p));
 
     res.json({
       success: true,
-      data: products,
-      count: products.length
+      data: productsWithImages,
+      count: productsWithImages.length
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener productos'
+      message: error.message
     });
   }
 };
@@ -35,6 +37,7 @@ exports.getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const product = await productService.getById(id);
+    Product.addImagesField(product);
 
     res.json({
       success: true,
@@ -44,7 +47,7 @@ exports.getProductById = async (req, res, next) => {
     const status = error.message === 'Producto no encontrado' ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al obtener producto'
+      message: error.message
     });
   }
 };
@@ -56,16 +59,17 @@ exports.getProductsByCategory = async (req, res, next) => {
   try {
     const { category } = req.params;
     const products = await productService.getByCategory(category);
+    const productsWithImages = products.map(p => Product.addImagesField(p));
 
     res.json({
       success: true,
-      data: products,
-      count: products.length
+      data: productsWithImages,
+      count: productsWithImages.length
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener productos por categoría'
+      message: error.message
     });
   }
 };
@@ -85,7 +89,7 @@ exports.createProduct = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message || 'Error al crear producto'
+      message: error.message
     });
   }
 };
@@ -107,7 +111,7 @@ exports.updateProduct = async (req, res, next) => {
     const status = error.message === 'Producto no encontrado' ? 404 : 400;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al actualizar producto'
+      message: error.message
     });
   }
 };
@@ -127,7 +131,177 @@ exports.deleteProduct = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message || 'Error al eliminar producto'
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Obtener inventario de todos los productos
+ */
+exports.getInventory = async (req, res, next) => {
+  try {
+    const products = await productService.getAllInventory();
+    
+    res.json({
+      success: true,
+      data: products,
+      count: products.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Obtener productos con stock bajo
+ */
+exports.getLowStockProducts = async (req, res, next) => {
+  try {
+    const products = await productService.getLowStock();
+    
+    res.json({
+      success: true,
+      data: products,
+      count: products.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Obtener inventario de un producto
+ */
+exports.getProductInventory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await productService.getById(id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        id: product.id,
+        name: product.name,
+        stock: product.stock,
+        lowStockThreshold: product.lowStockThreshold,
+        isLowStock: product.stock <= product.lowStockThreshold,
+        lastRestocked: product.updatedAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Actualizar inventario de un producto
+ */
+exports.updateInventory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { stock, lowStockThreshold } = req.body;
+    
+    const product = await Product.findByPk(id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+    
+    await product.update({
+      stock: stock !== undefined ? stock : product.stock,
+      lowStockThreshold: lowStockThreshold !== undefined ? lowStockThreshold : product.lowStockThreshold
+    });
+    
+    res.json({
+      success: true,
+      message: 'Inventario actualizado',
+      data: {
+        id: product.id,
+        name: product.name,
+        stock: product.stock,
+        lowStockThreshold: product.lowStockThreshold,
+        isLowStock: product.stock <= product.lowStockThreshold
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Ajustar stock (incremento o decremento)
+ */
+exports.adjustStock = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { adjustment, reason } = req.body; // adjustment: número positivo o negativo
+    
+    if (adjustment === undefined || isNaN(adjustment)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El ajuste debe ser un número'
+      });
+    }
+    
+    const product = await Product.findByPk(id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+    
+    const newStock = product.stock + adjustment;
+    
+    if (newStock < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No hay suficiente stock'
+      });
+    }
+    
+    await product.update({ stock: newStock });
+    
+    res.json({
+      success: true,
+      message: `Stock ajustado${reason ? `: ${reason}` : ''}`,
+      data: {
+        id: product.id,
+        name: product.name,
+        previousStock: product.stock - adjustment,
+        newStock: product.stock,
+        adjustment,
+        isLowStock: product.stock <= product.lowStockThreshold
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
     });
   }
 };
