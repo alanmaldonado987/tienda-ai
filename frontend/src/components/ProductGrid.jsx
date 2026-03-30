@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, Grid3X3, Grid2X2, Loader2, SlidersHorizontal, X, Check } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { productsAPI } from '../services/api';
+import { ProductGridSkeleton } from './Skeleton';
+import { motion } from 'framer-motion';
 
 const normalizeProducts = (products) => {
   return products.map(product => ({
@@ -405,10 +407,7 @@ export default function ProductGrid({ searchQuery = '' }) {
       )}
 
       {loading && (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-naf-black" />
-          <span className="ml-2 text-gray-500">Cargando productos...</span>
-        </div>
+        <ProductGridSkeleton count={8} />
       )}
 
       {error && (
@@ -424,23 +423,35 @@ export default function ProductGrid({ searchQuery = '' }) {
       )}
 
       {!loading && !error && (
-        <div
+        <motion.div
           className={
             viewMode === 'grid'
               ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6'
               : 'grid grid-cols-1 md:grid-cols-2 gap-6'
           }
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.05 }
+            }
+          }}
         >
           {products.map((product, index) => (
-            <div
+            <motion.div
               key={product.id}
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 50}ms` }}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              transition={{ duration: 0.3 }}
             >
               <ProductCard product={product} />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {!loading && !error && products.length === 0 && (

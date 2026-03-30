@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
@@ -25,6 +26,16 @@ import TitleUpdater from './components/TitleUpdater'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import PaymentResultPage from './pages/PaymentResultPage'
+import PageTransition from './components/PageTransition'
+
+// Componente wrapper para animaciones
+function AnimatedRoute({ children }) {
+  return (
+    <PageTransition>
+      {children}
+    </PageTransition>
+  );
+}
 
 // Admin Pages
 import AdminLayout from './components/admin/AdminLayout'
@@ -63,6 +74,7 @@ function App() {
             <AuthProvider>
               <WishlistProvider>
                 <CartProvider>
+                <AnimatePresence mode="wait">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/auth" element={<Auth />} />
@@ -147,6 +159,7 @@ function App() {
                     <Route path="reviews" element={<AdminReviews />} />
                   </Route>
                 </Routes>
+                </AnimatePresence>
                 <FlyingProduct />
                 <SupportChat />
               </CartProvider>

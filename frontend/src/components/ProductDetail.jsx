@@ -5,6 +5,8 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsAPI } from '../services/api';
 import SizeGuide from './SizeGuide';
+import { ProductDetailSkeleton } from './Skeleton';
+import { motion } from 'framer-motion';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -108,8 +110,8 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-8 py-8 flex items-center justify-center min-h-[50vh]">
-        <div className="animate-pulse text-gray-500">Cargando...</div>
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-8 py-8">
+        <ProductDetailSkeleton />
       </div>
     );
   }
