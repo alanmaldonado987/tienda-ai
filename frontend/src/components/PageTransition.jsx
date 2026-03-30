@@ -163,6 +163,13 @@ export const animations = {
 };
 
 // Exportar variantes para uso directo
-export const { fadeIn, fadeInUp, fadeInDown, scaleIn, slideInRight, stagger } = animations;
+export const pageAnimations = {
+  fadeIn: animations.fadeIn,
+  fadeInUp: animations.fadeInUp,
+  fadeInDown: animations.fadeInDown,
+  scaleIn: animations.scaleIn,
+  slideInRight: animations.slideInRight,
+  stagger: animations.stagger
+};
 
 export default PageTransition;
