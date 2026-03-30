@@ -105,22 +105,22 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-6 py-12 min-h-screen">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-4 mb-8"
+        className="flex items-center gap-4 mb-10"
       >
         <button
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-3 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-6 h-6" />
         </button>
         <div>
-          <h1 className="text-2xl font-semibold">Mi Perfil</h1>
-          <p className="text-naf-gray text-sm">Gestiona tu información personal</p>
+          <h1 className="text-3xl font-semibold">Mi Perfil</h1>
+          <p className="text-naf-gray text-base mt-1">Gestiona tu información personal</p>
         </div>
       </motion.div>
 
@@ -145,11 +145,11 @@ export default function ProfilePage() {
             animate={{ opacity: 1, x: 0 }}
             className="md:col-span-1"
           >
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center">
-              <h2 className="text-lg font-semibold mb-4">Foto de Perfil</h2>
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+              <h2 className="text-xl font-semibold mb-6">Foto de Perfil</h2>
               
               <div className="relative inline-block">
-                <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-xl">
                   {avatarPreview ? (
                     <img 
                       src={avatarPreview} 
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-naf-black text-white flex items-center justify-center text-4xl font-semibold">
+                    <div className="w-full h-full bg-naf-black text-white flex items-center justify-center text-5xl font-semibold">
                       {user.name?.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -172,9 +172,9 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 p-2 bg-naf-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+                  className="absolute bottom-2 right-2 p-3 bg-naf-black text-white rounded-full shadow-xl hover:bg-gray-800 transition-colors"
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-5 h-5" />
                 </button>
                 
                 <input
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                 />
               </div>
               
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-gray-500 mt-6">
                 JPG, PNG o GIF. Máximo 5MB
               </p>
               
@@ -212,20 +212,20 @@ export default function ProfilePage() {
             transition={{ delay: 0.1 }}
             className="md:col-span-2"
           >
-            <div className="bg-white rounded-xl border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold mb-6">Información Personal</h2>
+            <div className="bg-white rounded-2xl border border-gray-100 p-8">
+              <h2 className="text-xl font-semibold mb-8">Información Personal</h2>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nombre completo</label>
+                  <label className="block text-base font-medium text-gray-700 mb-3">Nombre completo</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-naf-black focus:ring-1 focus:ring-naf-black transition-colors"
+                      className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-naf-black focus:ring-2 focus:ring-naf-black/10 transition-colors"
                       placeholder="Tu nombre completo"
                       required
                     />
@@ -233,15 +233,15 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-base font-medium text-gray-700 mb-3">Email</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-naf-black focus:ring-1 focus:ring-naf-black transition-colors"
+                      className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-naf-black focus:ring-2 focus:ring-naf-black/10 transition-colors"
                       placeholder="tu@email.com"
                       required
                     />
@@ -249,35 +249,35 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono (opcional)</label>
+                  <label className="block text-base font-medium text-gray-700 mb-3">Teléfono (opcional)</label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone || ''}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-naf-black focus:ring-1 focus:ring-naf-black transition-colors"
+                      className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-naf-black focus:ring-2 focus:ring-naf-black/10 transition-colors"
                       placeholder="+57 300 123 4567"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-10 pt-8 border-t">
                 <button
                   type="submit"
                   disabled={savingProfile}
-                  className="w-full bg-naf-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full bg-naf-black text-white py-4 rounded-xl font-medium text-lg hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-3"
                 >
                   {savingProfile ? (
                     <>
-                      <Loader className="w-5 h-5 animate-spin" />
+                      <Loader className="w-6 h-6 animate-spin" />
                       Guardando...
                     </>
                   ) : (
                     <>
-                      <Save className="w-5 h-5" />
+                      <Save className="w-6 h-6" />
                       Guardar Cambios
                     </>
                   )}

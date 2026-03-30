@@ -69,19 +69,19 @@ export default function SettingsPage() {
     setActiveModule(null);
   };
 
-  // Si hay un módulo activo, mostrar su contenido
+    // Si hay un módulo activo, mostrar su contenido
   if (activeModule === 'SecuritySettings') {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto px-6 py-12 min-h-screen">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-naf-black mb-6 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-naf-black mb-8 transition-colors text-lg"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-6 h-6" />
             Volver a Configuración
           </button>
           
@@ -92,23 +92,23 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-6 py-12 min-h-screen">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-10"
       >
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-naf-black mb-4 transition-colors"
+          className="flex items-center gap-2 text-gray-600 hover:text-naf-black mb-6 transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-6 h-6" />
           Volver
         </button>
         
-        <h1 className="text-2xl font-semibold">Configuración</h1>
-        <p className="text-naf-gray text-sm">Administra tu cuenta y preferencias</p>
+        <h1 className="text-3xl font-semibold"> Configuración</h1>
+        <p className="text-naf-gray text-base mt-2">Administra tu cuenta y preferencias</p>
       </motion.div>
 
       {/* Modules Grid */}
