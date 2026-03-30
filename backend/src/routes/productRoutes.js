@@ -15,6 +15,8 @@ const { auth, optionalAuth } = require('../middleware/auth');
 
 // Rutas públicas
 router.get('/category/:category', productController.getProductsByCategory);
+router.get('/new', productController.getNewProducts);
+router.get('/sale', productController.getOnSaleProducts);
 router.get('/:id', productController.getProductById);
 router.get('/', optionalAuth, productController.getProducts);
 

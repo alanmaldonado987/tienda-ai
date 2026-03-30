@@ -34,6 +34,9 @@ const Coupon = require('./models/Coupon');
 const Category = require('./models/Category');
 const Collection = require('./models/Collection');
 const CollectionProduct = require('./models/CollectionProduct');
+const RecentlyViewed = require('./models/RecentlyViewed');
+const Testimonial = require('./models/Testimonial');
+const CountdownOffer = require('./models/CountdownOffer');
 
 // Set up associations
 Collection.belongsToMany(Product, { 
@@ -46,6 +49,14 @@ Product.belongsToMany(Collection, {
   foreignKey: 'productId', 
   as: 'collections' 
 });
+
+// RecentlyViewed associations
+RecentlyViewed.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(RecentlyViewed, { foreignKey: 'productId', as: 'recentlyViewed' });
+
+// Testimonial associations
+Testimonial.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(Testimonial, { foreignKey: 'productId', as: 'testimonials' });
 
 // RefreshToken se importa automáticamente cuando se usa en authService
 
@@ -79,6 +90,9 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/collections', require('./routes/collectionRoutes'));
+app.use('/api/recently-viewed', require('./routes/recentlyViewedRoutes'));
+app.use('/api/testimonials', require('./routes/testimonialRoutes'));
+app.use('/api/countdown', require('./routes/countdownRoutes'));
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/users', adminUserRoutes);

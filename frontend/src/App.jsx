@@ -10,6 +10,11 @@ import LoadingBar from './components/LoadingBar'
 import Header from './components/Header'
 import Banner from './components/Banner'
 import CollectionsCarousel from './components/CollectionsCarousel'
+import CountdownTimer from './components/CountdownTimer'
+import NewArrivals from './components/NewArrivals'
+import OnSale from './components/OnSale'
+import Testimonials from './components/Testimonials'
+import RecentlyViewed from './components/RecentlyViewed'
 import ProductGrid from './components/ProductGrid'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
@@ -55,14 +60,19 @@ import AdminCollections from './pages/admin/CollectionsPage'
 function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
+      <CountdownTimer />
       <Header />
       <main className="flex-1">
         <Banner />
         <CollectionsCarousel />
+        <NewArrivals />
+        <OnSale />
+        <Testimonials />
         <ProductGrid />
       </main>
       <Footer />
       <CartDrawer />
+      <RecentlyViewed />
     </div>
   )
 }

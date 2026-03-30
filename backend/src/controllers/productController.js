@@ -305,3 +305,69 @@ exports.adjustStock = async (req, res, next) => {
     });
   }
 };
+
+/**
+ * Obtener productos nuevos (isNew = true)
+ */
+exports.getNewProducts = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    
+    const products = await Product.findAll({
+      where: { isNew: true, isActive: true },
+      order: [['createdAt', 'DESC']],
+      limit
+    });
+    
+    const productsWithImages = products.map(p => Product.addImagesField(p));
+    
+    res.json({
+      success: true,
+      data: productsWithImages,
+      count: productsWithImages.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Obtener productos en oferta (discountPrice > 0 y vigente)
+ */
+exports.getOnSaleProducts = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const now = new Date();
+    
+    const products = await Product.findAll({
+      where: {
+        isActive: true,
+        showDiscount: true,
+        discountPrice: { [require('sequelize').Op.ne]: null }
+      },
+      order: [['discountEndDate', 'DESC']],
+      limit
+    });
+    
+    const validProducts = products.filter(p => {
+      if (!p.discountEndDate) return true;
+      return new Date(p.discountEndDate) > now;
+    });
+    
+    const productsWithImages = validProducts.map(p => Product.addImagesField(p));
+    
+    res.json({
+      success: true,
+      data: productsWithImages,
+      count: productsWithImages.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

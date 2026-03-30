@@ -69,18 +69,35 @@ export default function ProductCard({ product }) {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
 
-          {/* Tag */}
-          {product.tag && (
-            <span className="absolute top-3 left-3 bg-naf-black text-white text-xs px-3 py-1 tracking-wider">
-              {product.tag}
-            </span>
-          )}
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1">
+            {product.isNew && (
+              <span className="bg-naf-black text-white text-xs px-3 py-1 tracking-wider">
+                NUEVO
+              </span>
+            )}
+            {product.tag && (
+              <span className="bg-naf-black text-white text-xs px-3 py-1 tracking-wider">
+                {product.tag}
+              </span>
+            )}
+            {product.showDiscount && product.discountPrice && (
+              <span className="bg-red-600 text-white text-xs px-3 py-1 tracking-wider font-bold">
+                {Math.round((1 - product.discountPrice / product.price) * 100)}% OFF
+              </span>
+            )}
+            {product.originalPrice && !product.showDiscount && (
+              <span className="bg-red-600 text-white text-xs px-3 py-1 tracking-wider font-bold">
+                {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+              </span>
+            )}
+          </div>
 
-          {/* Wishlist button */}
+          {/* Wishlist button - siempre visible */}
           <button
             onClick={handleToggleWishlist}
-            className={`absolute top-3 right-3 w-8 h-8 bg-white flex items-center justify-center transition-all duration-300 ${
-              inWishlist ? 'opacity-100 text-red-500' : 'opacity-0 group-hover:opacity-100 hover:text-red-500'
+            className={`absolute top-3 right-3 w-8 h-8 bg-white flex items-center justify-center transition-all duration-300 hover:text-red-500 ${
+              inWishlist ? 'text-red-500' : 'text-gray-400'
             }`}
           >
             <Heart
@@ -166,8 +183,15 @@ export default function ProductCard({ product }) {
             {product.name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold">{formatPrice(product.price)}</span>
-            {product.originalPrice && (
+            <span className="text-sm font-semibold">
+              {formatPrice(product.discountPrice || product.price)}
+            </span>
+            {product.discountPrice && product.originalPrice && (
+              <span className="text-sm text-naf-gray line-through">
+                {formatPrice(product.originalPrice)}
+              </span>
+            )}
+            {!product.discountPrice && product.originalPrice && (
               <span className="text-sm text-naf-gray line-through">
                 {formatPrice(product.originalPrice)}
               </span>

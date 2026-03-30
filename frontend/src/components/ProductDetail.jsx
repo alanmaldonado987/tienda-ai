@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Heart, ShoppingBag, ArrowLeft, Star, Truck, RefreshCw, Shield, Ruler } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { productsAPI } from '../services/api';
+import { productsAPI, recentlyViewedAPI } from '../services/api';
 import SizeGuide from './SizeGuide';
 import { ProductDetailSkeleton } from './Skeleton';
 import { motion } from 'framer-motion';
@@ -24,6 +24,12 @@ export default function ProductDetail() {
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
+    const generateSessionId = () => {
+      const id = 'session_' + Math.random().toString(36).substr(2, 9)
+      localStorage.setItem('sessionId', id)
+      return id
+    }
+
     const fetchProduct = async () => {
       try {
         const response = await productsAPI.getById(id);
@@ -52,6 +58,14 @@ export default function ProductDetail() {
         }
         if (productData.sizes?.length) {
           setSelectedSize(productData.sizes[0]);
+        }
+
+        // Registrar en recently viewed
+        try {
+          const sessionId = localStorage.getItem('sessionId') || generateSessionId()
+          await recentlyViewedAPI.add(id, sessionId)
+        } catch (err) {
+          console.error('Error adding to recently viewed:', err)
         }
       } catch (error) {
         console.error('Error fetching product:', error);

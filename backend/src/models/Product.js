@@ -78,6 +78,30 @@ const Product = sequelize.define('Product', {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
     field: 'is_active'
+  },
+  isNew: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'is_new',
+    comment: 'Producto nuevo/novedad'
+  },
+  discountPrice: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'discount_price',
+    comment: 'Precio con descuento'
+  },
+  discountEndDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'discount_end_date',
+    comment: 'Fecha fin de descuento'
+  },
+  showDiscount: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'show_discount',
+    comment: 'Mostrar badge de descuento'
   }
 }, {
   tableName: 'products',

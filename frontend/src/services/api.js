@@ -226,4 +226,36 @@ export const adminUsersAPI = {
   delete: (id) => api.delete(`/admin/users/${id}`)
 };
 
+export const newArrivalsAPI = {
+  get: (limit) => api.get('/products/new', { params: { limit } })
+};
+
+export const onSaleAPI = {
+  get: (limit) => api.get('/products/sale', { params: { limit } })
+};
+
+export const recentlyViewedAPI = {
+  add: (productId, sessionId) => api.post('/recently-viewed', { productId, sessionId }),
+  get: (sessionId) => api.get('/recently-viewed', { params: { sessionId } }),
+  clear: (sessionId) => api.delete('/recently-viewed', { data: { sessionId } })
+};
+
+export const testimonialsAPI = {
+  getApproved: () => api.get('/testimonials/approved'),
+  getFeatured: () => api.get('/testimonials/featured'),
+  getAll: () => api.get('/testimonials'),
+  create: (data) => api.post('/testimonials', data),
+  approve: (id, isApproved, isFeatured) => api.put(`/testimonials/${id}/approve`, { isApproved, isFeatured }),
+  delete: (id) => api.delete(`/testimonials/${id}`)
+};
+
+export const countdownAPI = {
+  getActive: () => api.get('/countdown/active'),
+  getFeatured: () => api.get('/countdown/featured'),
+  getAll: () => api.get('/countdown'),
+  create: (data) => api.post('/countdown', data),
+  update: (id, data) => api.put(`/countdown/${id}`, data),
+  delete: (id) => api.delete(`/countdown/${id}`)
+};
+
 export default api;
