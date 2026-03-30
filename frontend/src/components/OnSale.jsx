@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { onSaleAPI } from '../services/api'
 import { ArrowRight, Flame } from 'lucide-react'
 import ProductCard from './ProductCard'
+import { ProductGridSkeleton } from './Skeleton'
 
 export default function OnSale({ limit = 6 }) {
   const [products, setProducts] = useState([])
@@ -23,7 +24,18 @@ export default function OnSale({ limit = 6 }) {
     }
   }
 
-  if (loading || products.length === 0) return null
+  if (loading) {
+    return (
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-8">
+          <div className="h-8 w-48 bg-gray-200 rounded mb-6 animate-pulse"></div>
+          <ProductGridSkeleton count={6} />
+        </div>
+      </section>
+    )
+  }
+
+  if (products.length === 0) return null
 
   return (
     <section className="py-8 bg-gray-50">

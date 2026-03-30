@@ -42,7 +42,31 @@ export default function Testimonials() {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
   }
 
-  if (loading || testimonials.length === 0) return null
+  if (loading) {
+    return (
+      <section className="py-12 bg-white">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-8">
+          <div className="text-center mb-8">
+            <div className="h-8 w-64 bg-gray-200 rounded mx-auto mb-2 animate-pulse"></div>
+            <div className="h-5 w-80 bg-gray-200 rounded mx-auto animate-pulse"></div>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <div className="h-6 w-48 bg-gray-200 rounded mx-auto mb-4 animate-pulse"></div>
+            <div className="h-24 bg-gray-200 rounded-lg mb-6 animate-pulse"></div>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="space-y-2">
+                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (testimonials.length === 0) return null
 
   return (
     <section className="py-12 bg-white">
