@@ -55,6 +55,11 @@ const User = sequelize.define('User', {
     type: DataTypes.TEXT,
     allowNull: true,
     field: 'ban_reason'
+  },
+  avatar: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'URL o base64 de la foto de perfil'
   }
 }, {
   tableName: 'users',

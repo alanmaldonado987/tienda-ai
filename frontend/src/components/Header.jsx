@@ -184,8 +184,17 @@ export default function Header() {
                   >
                     Mi perfil
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-naf-gray">
+                  <button 
+                    onClick={() => navigate('/orders')}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
                     Mis pedidos
+                  </button>
+                  <button 
+                    onClick={() => navigate('/settings')}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    Configuración
                   </button>
                   {isAdmin && (
                     <button 

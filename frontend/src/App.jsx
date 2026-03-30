@@ -17,7 +17,8 @@ import Auth from './components/Auth'
 import ProductDetail from './components/ProductDetail'
 import WishlistPage from './components/WishlistPage'
 import SearchPage from './components/SearchPage'
-import ProfilePage from './components/ProfilePage'
+import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
 import CheckoutPage from './components/CheckoutPage'
 import OrdersPage from './components/OrdersPage'
 import TitleUpdater from './components/TitleUpdater'
@@ -98,6 +99,15 @@ function App() {
                       <Header />
                       <main className="flex-1">
                         <ProfilePage />
+                      </main>
+                      <Footer />
+                    </div>
+                  } />
+                  <Route path="/settings" element={
+                    <div className="min-h-screen flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <SettingsPage />
                       </main>
                       <Footer />
                     </div>

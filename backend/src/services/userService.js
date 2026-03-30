@@ -29,11 +29,11 @@ class UserService {
   /**
    * Actualizar perfil de usuario
    * @param {string} id - ID del usuario
-   * @param {Object} data - Datos a actualizar (name, email, phone)
+   * @param {Object} data - Datos a actualizar (name, email, phone, avatar)
    * @returns {Promise<Object>}
    */
   async updateProfile(id, data) {
-    const { name, email, phone } = data;
+    const { name, email, phone, avatar } = data;
 
     // Verificar si el nuevo email ya está en uso por otro usuario
     if (email) {
@@ -47,7 +47,7 @@ class UserService {
       }
     }
 
-    const user = await User.updateUser(id, { name, email, phone });
+    const user = await User.updateUser(id, { name, email, phone, avatar });
     const role = await Role.findByPk(user.roleId);
     const { password, ...userData } = user;
 
