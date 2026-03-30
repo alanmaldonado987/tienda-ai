@@ -56,6 +56,8 @@ import AdminInventory from './pages/admin/InventoryPage'
 import AdminConfig from './pages/admin/ConfigPage'
 import AdminReviews from './pages/admin/ReviewsPage'
 import AdminCollections from './pages/admin/CollectionsPage'
+import AdminTestimonials from './pages/admin/TestimonialsPage'
+import AdminCountdown from './pages/admin/CountdownPage'
 
 function HomePage() {
   return (
@@ -187,6 +189,8 @@ function App() {
                     <Route path="coupons" element={<AdminCoupons />} />
                     <Route path="categories" element={<AdminCategories />} />
                     <Route path="collections" element={<AdminCollections />} />
+                    <Route path="testimonials" element={<AdminTestimonials />} />
+                    <Route path="countdown" element={<AdminCountdown />} />
                     <Route path="inventory" element={<AdminInventory />} />
                     <Route path="config" element={<AdminConfig />} />
                     <Route path="reviews" element={<AdminReviews />} />

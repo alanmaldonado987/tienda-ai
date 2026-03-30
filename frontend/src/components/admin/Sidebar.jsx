@@ -11,13 +11,17 @@ import {
   Star,
   LogOut,
   Store,
-  Layers
+  Layers,
+  Clock,
+  MessageSquare
 } from 'lucide-react'
 
 const menuItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/products', label: 'Productos', icon: Package },
   { path: '/admin/collections', label: 'Colecciones', icon: Layers },
+  { path: '/admin/countdown', label: 'Ofertas', icon: Clock },
+  { path: '/admin/testimonials', label: 'Testimonios', icon: MessageSquare },
   { path: '/admin/users', label: 'Usuarios', icon: Users },
   { path: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
   { path: '/admin/coupons', label: 'Cupones', icon: Tag },
