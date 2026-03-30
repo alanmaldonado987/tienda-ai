@@ -17,7 +17,7 @@ exports.getWishlist = async (req, res) => {
     console.error('Error al obtener wishlist:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener favoritos'
+      message: error.message
     });
   }
 };
@@ -42,7 +42,7 @@ exports.addToWishlist = async (req, res) => {
     const status = error.message.includes('no encontrado') ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al agregar a favoritos'
+      message: error.message
     });
   }
 };
@@ -66,7 +66,7 @@ exports.removeFromWishlist = async (req, res) => {
     const status = error.message.includes('no estaba') ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al quitar de favoritos'
+      message: error.message
     });
   }
 };
@@ -94,7 +94,7 @@ exports.toggleWishlist = async (req, res) => {
     const status = error.message.includes('no encontrado') ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al actualizar favoritos'
+      message: error.message
     });
   }
 };

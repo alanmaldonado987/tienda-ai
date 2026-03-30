@@ -55,6 +55,20 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = async (product, size, color, quantity = 1) => {
+    if (!user) {
+      const shouldLogin = await openConfirm({
+        title: 'Inicia sesión para comprar',
+        message: 'Debes iniciar sesión para agregar productos al carrito y completar tu compra.',
+        confirmText: 'Ir a iniciar sesión',
+        cancelText: 'Cancelar'
+      });
+
+      if (shouldLogin) {
+        window.location.href = '/auth';
+      }
+      return;
+    }
+
     // Verificar si el producto ya existe en el carrito para mostrar advertencia
     const existingItem = cart.find(
       item => item.id === product.id && item.selectedSize === size && item.selectedColor === color
@@ -72,24 +86,6 @@ export function CartProvider({ children }) {
       if (!confirmed) {
         return; // El usuario canceló
       }
-    }
-
-    if (!user) {
-      // Sin usuario, guardar en localStorage
-      setCart(prev => {
-        const existing = prev.find(
-          item => item.id === product.id && item.selectedSize === size && item.selectedColor === color
-        );
-        if (existing) {
-          return prev.map(item =>
-            item.id === product.id && item.selectedSize === size && item.selectedColor === color
-              ? { ...item, quantity: item.quantity + quantity }
-              : item
-          );
-        }
-        return [...prev, { ...product, selectedSize: size, selectedColor: color, quantity }];
-      });
-      return;
     }
 
     try {

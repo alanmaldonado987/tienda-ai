@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, Menu, User, Heart, X, LogOut } from 'lucide-react';
+import { Search, ShoppingBag, Menu, User, Heart, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -16,6 +16,8 @@ export default function Header() {
   const { user, logout, confirmLogout } = useAuth();
   const { wishlistCount } = useWishlist();
   const { openConfirm } = useModal();
+
+  const isAdmin = user && (user.roleId === 1 || user.role === 'admin');
 
   const handleLogout = async () => {
     const confirmed = await openConfirm({
@@ -81,6 +83,17 @@ export default function Header() {
 
           {/* Right icons */}
           <div className="flex items-center gap-4">
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => navigate('/admin')}
+                title="Panel de administración"
+                aria-label="Panel de administración"
+                className="lg:hidden p-2 hover:bg-naf-light-gray rounded-full transition-colors"
+              >
+                <LayoutDashboard className="w-5 h-5" />
+              </button>
+            )}
             {/* Search */}
             <div className="relative">
               {searchOpen ? (
@@ -142,10 +155,21 @@ export default function Header() {
               )}
             </div>
 
+            {isAdmin && (
+              <Link
+                to="/admin"
+                title="Panel de administración"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium tracking-wide border border-naf-black text-naf-black hover:bg-naf-black hover:text-white transition-colors rounded-sm"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Admin
+              </Link>
+            )}
+
             {/* User */}
             {user ? (
               <div className="relative group">
-                <button className="p-2 hover:bg-naf-light-gray rounded-full transition-colors hidden sm:block">
+                <button type="button" className="p-2 hover:bg-naf-light-gray rounded-full transition-colors">
                   <User className="w-5 h-5" />
                 </button>
                 {/* User dropdown */}
@@ -163,6 +187,15 @@ export default function Header() {
                   <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-naf-gray">
                     Mis pedidos
                   </button>
+                  {isAdmin && (
+                    <button 
+                      type="button"
+                      onClick={() => navigate('/admin')}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-naf-black font-medium"
+                    >
+                      Panel de Admin
+                    </button>
+                  )}
                   <button 
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 flex items-center gap-2"
@@ -183,6 +216,7 @@ export default function Header() {
 
             {/* Wishlist */}
             <button 
+              type="button"
               onClick={() => navigate('/wishlist')}
               className="p-2 hover:bg-naf-light-gray rounded-full transition-colors hidden sm:block relative"
             >
@@ -235,6 +269,46 @@ export default function Header() {
                   {item}
                 </a>
               ))}
+              {user && (
+                <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
+                  <button
+                    type="button"
+                    className="w-full text-left text-lg py-2"
+                    onClick={() => { navigate('/profile'); setMobileMenuOpen(false); }}
+                  >
+                    Mi perfil
+                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      className="w-full text-left text-lg py-2 font-medium flex items-center gap-2"
+                      onClick={() => { navigate('/admin'); setMobileMenuOpen(false); }}
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      Panel de administración
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="w-full text-left text-lg py-2 text-red-600"
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await handleLogout();
+                    }}
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+              {!user && (
+                <button
+                  type="button"
+                  className="w-full text-left text-lg py-2 mt-4 border-t border-gray-200 pt-4"
+                  onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }}
+                >
+                  Iniciar sesión
+                </button>
+              )}
             </nav>
           </div>
         </div>

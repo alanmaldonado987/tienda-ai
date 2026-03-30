@@ -28,7 +28,6 @@ const Role = sequelize.define('Role', {
   underscored: true
 });
 
-// Seeds iniciales
 Role.seedInitial = async function() {
   const roles = ['admin', 'user'];
   
@@ -42,10 +41,8 @@ Role.seedInitial = async function() {
     }
   }
   
-  console.log('✅ Roles seeded');
 };
 
-// Obtener rol por nombre
 Role.findByName = async function(name) {
   return await Role.findOne({ where: { name } });
 };

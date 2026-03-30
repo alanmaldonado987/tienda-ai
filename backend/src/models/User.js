@@ -45,6 +45,16 @@ const User = sequelize.define('User', {
   resetPasswordExpires: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  isBanned: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'is_banned'
+  },
+  banReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'ban_reason'
   }
 }, {
   tableName: 'users',

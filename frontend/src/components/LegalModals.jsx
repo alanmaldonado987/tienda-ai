@@ -1,4 +1,4 @@
-export const terminosCondiciones = [
+export const terminosCondiciones = (appName = 'MODACOLOMBIA') => [
   {
     title: "TÉRMINOS Y CONDICIONES",
     updated: "Última actualización: Marzo 2026",
@@ -52,12 +52,12 @@ export const terminosCondiciones = [
       {
         number: "8",
         title: "Propiedad Intelectual",
-        content: "Todo el contenido de este sitio web, incluyendo textos, imágenes, logotipos y código, es propiedad de TU TIENDA o sus licenciantes y está protegido por leyes de derechos de autor."
+        content: `Todo el contenido de este sitio web, incluyendo textos, imágenes, logotipos y código, es propiedad de ${appName} o sus licenciantes y está protegido por leyes de derechos de autor.`
       },
       {
         number: "9",
         title: "Limitación de Responsabilidad",
-        content: "TU TIENDA no será responsable por daños directos, indirectos, incidentales o consecuenciales derivados del uso de este sitio web o la compra de productos."
+        content: `${appName} no será responsable por daños directos, indirectos, incidentales o consecuenciales derivados del uso de este sitio web o la compra de productos.`
       },
       {
         number: "10",

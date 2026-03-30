@@ -11,6 +11,13 @@ export default function ProductCard({ product }) {
   const { addToCart, triggerFlyingProduct } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
+  // Normalizar imagen: si es string, convertir a array; si no hay, usar placeholder
+  const productImages = Array.isArray(product.images) 
+    ? product.images 
+    : product.image 
+      ? [product.image] 
+      : ['https://via.placeholder.com/400x533?text=No+Image'];
+
   const inWishlist = isInWishlist(product.id);
 
   const formatPrice = (price) => {
@@ -38,7 +45,7 @@ export default function ProductCard({ product }) {
     triggerFlyingProduct({
       startX: rect.left + rect.width / 2,
       startY: rect.top + rect.height / 2,
-      image: product.image,
+      image: productImages[0],
       name: product.name
     }, targetPosition);
     addToCart(product, selectedSize, selectedColor);
@@ -57,7 +64,7 @@ export default function ProductCard({ product }) {
       <Link to={`/product/${product.id}`} className="block relative">
         <div className="relative aspect-[3/4] overflow-hidden bg-naf-light-gray mb-3">
           <img
-            src={product.image}
+            src={productImages[0]}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />

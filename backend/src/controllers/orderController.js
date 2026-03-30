@@ -18,7 +18,7 @@ exports.createOrder = async (req, res) => {
     const status = error.message.includes('vacío') || error.message.includes('requeridos') ? 400 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al crear orden'
+      message: error.message
     });
   }
 };
@@ -31,7 +31,6 @@ exports.getOrder = async (req, res) => {
     const { id } = req.params;
     const order = await orderService.getById(id);
 
-    // Verificar que la orden pertenece al usuario o es admin
     if (order.userId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
@@ -47,7 +46,7 @@ exports.getOrder = async (req, res) => {
     const status = error.message === 'Orden no encontrada' ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al obtener orden'
+      message: error.message
     });
   }
 };
@@ -68,7 +67,7 @@ exports.getOrders = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener órdenes'
+      message: error.message
     });
   }
 };
@@ -89,7 +88,7 @@ exports.getAllOrders = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener órdenes'
+      message: error.message
     });
   }
 };
@@ -120,7 +119,7 @@ exports.updateOrderStatus = async (req, res) => {
     const status = error.message === 'Orden no encontrada' ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al actualizar orden'
+      message: error.message
     });
   }
 };
@@ -132,10 +131,8 @@ exports.cancelOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
-
     const order = await orderService.getById(id);
 
-    // Verificar propiedad
     if (order.userId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
@@ -154,7 +151,7 @@ exports.cancelOrder = async (req, res) => {
     const status = error.message === 'Orden no encontrada' ? 404 : 400;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al cancelar orden'
+      message: error.message
     });
   }
 };

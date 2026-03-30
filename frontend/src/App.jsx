@@ -23,6 +23,7 @@ import OrdersPage from './components/OrdersPage'
 import TitleUpdater from './components/TitleUpdater'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import PaymentResultPage from './pages/PaymentResultPage'
 
 // Admin Pages
 import AdminLayout from './components/admin/AdminLayout'
@@ -121,6 +122,7 @@ function App() {
                   } />
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/payment" element={<PaymentResultPage />} />
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />

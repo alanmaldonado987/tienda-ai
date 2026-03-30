@@ -10,18 +10,15 @@ export function WishlistProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar wishlist de la API cuando el usuario inicia sesión
   useEffect(() => {
     if (user) {
       fetchWishlist();
     } else {
-      // Si no hay usuario, cargar desde localStorage
       const saved = localStorage.getItem('nafnaf-wishlist');
       setWishlist(saved ? JSON.parse(saved) : []);
     }
   }, [user]);
 
-  // Guardar en localStorage cuando cambia wishlist (solo para usuarios no logueados)
   useEffect(() => {
     if (!user) {
       localStorage.setItem('nafnaf-wishlist', JSON.stringify(wishlist));
@@ -37,7 +34,6 @@ export function WishlistProvider({ children }) {
     } catch (err) {
       console.error('Error fetching wishlist:', err);
       setError(err.message);
-      // Si hay error (ej: no autorizado), usar localStorage
       const saved = localStorage.getItem('nafnaf-wishlist');
       setWishlist(saved ? JSON.parse(saved) : []);
     } finally {
@@ -47,7 +43,6 @@ export function WishlistProvider({ children }) {
 
   const addToWishlist = async (product) => {
     if (!user) {
-      // Sin usuario, guardar en localStorage
       setWishlist(prev => {
         const exists = prev.find(item => item.id === product.id);
         if (exists) return prev;

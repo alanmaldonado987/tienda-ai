@@ -74,11 +74,16 @@ class OrderService {
 
     // Crear los items de la orden
     for (const item of cartItems) {
+      // Normalizar: obtener primera imagen del array o usar el campo image directamente
+      const productImage = Array.isArray(item.images) 
+        ? item.images[0] 
+        : item.image || 'https://via.placeholder.com/400x533?text=No+Image';
+      
       await OrderItem.create({
         orderId: order.id,
         productId: item.id,
         productName: item.name,
-        productImage: item.image,
+        productImage: productImage,
         price: item.price,
         originalPrice: item.originalPrice,
         quantity: item.quantity,

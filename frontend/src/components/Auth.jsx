@@ -2,14 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useConfig } from '../context/ConfigContext';
 import { useToast } from './Toast';
 import Modal from './Modal';
 import { terminosCondiciones, politicaPrivacidad } from './LegalModals';
+import apolloVideo from '../assets/apollo-video.mp4';
 
 export default function Auth() {
   const navigate = useNavigate();
   const { login, register, loading, user } = useAuth();
+  const { config } = useConfig();
   const { success, error: showError } = useToast();
+  const appName = config.app_name;
+  const legalTerminos = terminosCondiciones(appName);
   
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -27,7 +32,6 @@ export default function Auth() {
     rememberMe: false
   });
 
-  // Si ya está logueado, redirigir según el rol
   useEffect(() => {
     if (user) {
       if (user.roleId === 1) {
@@ -82,11 +86,9 @@ export default function Auth() {
     if (!validateForm()) return;
     
     if (isLogin) {
-      // Pasar recordMe al login para generar refresh token
       const result = await login(formData.email, formData.password, formData.rememberMe);
       if (result.success) {
         success('¡Bienvenido de vuelta!');
-        // Si es admin, redirigir al panel de admin
         const userData = JSON.parse(localStorage.getItem('nafnaf-user'));
         if (userData && userData.roleId === 1) {
           navigate('/admin');
@@ -100,7 +102,6 @@ export default function Auth() {
       const result = await register(formData);
       if (result.success) {
         success('¡Cuenta creada exitosamente! Ahora puedes iniciar sesión');
-        // Limpiar formulario y cambiar a login
         setFormData({
           name: '',
           email: '',
@@ -144,11 +145,11 @@ export default function Auth() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-shopping-in-a-store-4476-large.mp4" type="video/mp4" />
+          <source src={apolloVideo} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <div className="text-white text-center p-8">
-            <h2 className="text-4xl font-semibold mb-4">TU TIENDA</h2>
+            <h2 className="text-4xl font-semibold mb-4">{appName}</h2>
             <p className="text-lg opacity-90">Moda para toda la familia</p>
           </div>
         </div>
@@ -160,7 +161,7 @@ export default function Auth() {
           {/* Logo mobile */}
           <div className="lg:hidden text-center mb-4">
             <Link to="/" className="text-2xl font-semibold tracking-wider">
-              TU<span className="font-light">TIENDA</span>
+              {appName}
             </Link>
           </div>
 
@@ -423,7 +424,7 @@ export default function Auth() {
         title="Términos y Condiciones"
       >
         <div className="space-y-6">
-          {terminosCondiciones.map((section, idx) => (
+          {legalTerminos.map((section, idx) => (
             <div key={idx}>
               <p className="text-xs text-gray-500 mb-4">{section.updated}</p>
               {section.sections.map((item, i) => (

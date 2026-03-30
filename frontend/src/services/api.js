@@ -122,7 +122,10 @@ export const authAPI = {
 export const productsAPI = {
   getAll: (params) => api.get('/products', { params }),
   getById: (id) => api.get(`/products/${id}`),
-  getByCategory: (category) => api.get(`/products/category/${category}`)
+  getByCategory: (category) => api.get(`/products/category/${category}`),
+  create: (data) => api.post('/products', data),
+  update: (id, data) => api.put(`/products/${id}`, data),
+  delete: (id) => api.delete(`/products/${id}`)
 };
 
 export const wishlistAPI = {
@@ -161,7 +164,8 @@ export const paymentAPI = {
 
 export const configAPI = {
   getAll: () => api.get('/config'),
-  getValue: (key) => api.get(`/config/${key}`)
+  getValue: (key) => api.get(`/config/${key}`),
+  update: (data) => api.put('/config', data)
 };
 
 export const categoriesAPI = {
@@ -198,6 +202,14 @@ export const dashboardAPI = {
 export const adminOrdersAPI = {
   getAll: () => api.get('/orders/admin/all'),
   updateStatus: (id, status) => api.put(`/orders/admin/${id}/status`, { status })
+};
+
+export const adminUsersAPI = {
+  getAll: (params) => api.get('/admin/users', { params }),
+  getById: (id) => api.get(`/admin/users/${id}`),
+  update: (id, data) => api.put(`/admin/users/${id}`, data),
+  toggleBan: (id, banned, reason) => api.put(`/admin/users/${id}/ban`, { banned, reason }),
+  delete: (id) => api.delete(`/admin/users/${id}`)
 };
 
 export default api;

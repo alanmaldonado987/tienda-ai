@@ -86,13 +86,8 @@ class AuthService {
    * @returns {Promise<string>} Token string
    */
   async generateRefreshToken(user, options = {}) {
-    // Generar token aleatorio
     const token = crypto.randomBytes(64).toString('hex');
-    
-    // Expira en 30 días
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-    // Guardar en BD (usar camelCase - Sequelize convierte a snake_case)
     await RefreshToken.create({
       token,
       userId: user.id,

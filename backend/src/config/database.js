@@ -12,7 +12,7 @@ const sequelize = new Sequelize(
     host: config.database.host,
     port: config.database.port,
     dialect: 'postgres',
-    logging: config.nodeEnv === 'development' ? console.log : false,
+    logging: false,
     pool: {
       max: 5,
       min: 0,
@@ -26,11 +26,9 @@ const sequelize = new Sequelize(
   }
 );
 
-// Test connection on startup
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Database connected successfully');
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);

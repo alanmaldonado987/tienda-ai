@@ -3,7 +3,17 @@ import { ChevronDown, Grid3X3, Grid2X2, Loader2, SlidersHorizontal, X, Check } f
 import ProductCard from './ProductCard';
 import { productsAPI } from '../services/api';
 
-// Categorías
+const normalizeProducts = (products) => {
+  return products.map(product => ({
+    ...product,
+    images: product.images && Array.isArray(product.images) && product.images.length > 0
+      ? product.images.filter(img => img) // filtrar undefined
+      : product.image
+        ? [product.image]
+        : ['https://via.placeholder.com/400x533?text=No+Image']
+  }));
+};
+
 const categories = [
   { id: "todos", name: "Todos" },
   { id: "hombre", name: "Hombre" },
@@ -13,7 +23,6 @@ const categories = [
   { id: "accesorios", name: "Accesorios" }
 ];
 
-// Géneros
 const genders = [
   { id: "todos", name: "Todos" },
   { id: "hombre", name: "Hombre" },
@@ -23,7 +32,6 @@ const genders = [
   { id: "ninas", name: "Niñas" }
 ];
 
-// Tallas
 const sizes = [
   { id: "xs", name: "XS" },
   { id: "s", name: "S" },
@@ -38,7 +46,6 @@ const sizes = [
   { id: "36", name: "36" }
 ];
 
-// Rango de precios
 const priceRanges = [
   { id: "all", name: "Todos los precios", min: 0, max: Infinity },
   { id: "0-50000", name: "Menos de $50.000", min: 0, max: 50000 },
@@ -48,7 +55,6 @@ const priceRanges = [
   { id: "200000+", name: "Más de $200.000", min: 200000, max: Infinity }
 ];
 
-// Colores disponibles
 const availableColors = [
   { id: "negro", name: "Negro", hex: "#1a1a1a" },
   { id: "blanco", name: "Blanco", hex: "#FFFFFF" },
@@ -70,7 +76,6 @@ export default function ProductGrid({ searchQuery = '' }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Filtros
   const [showFilters, setShowFilters] = useState(false);
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
   const [selectedColors, setSelectedColors] = useState([]);
@@ -78,7 +83,6 @@ export default function ProductGrid({ searchQuery = '' }) {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [onSale, setOnSale] = useState(false);
 
-  // Cargar productos desde API
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -97,9 +101,8 @@ export default function ProductGrid({ searchQuery = '' }) {
 
         const response = await productsAPI.getAll(params);
         
-        let filteredProducts = response.data.data;
+        let filteredProducts = normalizeProducts(response.data.data);
         
-        // Aplicar filtros locales
         if (selectedPriceRange !== 'all') {
           const range = priceRanges.find(r => r.id === selectedPriceRange);
           if (range) {
@@ -132,7 +135,6 @@ export default function ProductGrid({ searchQuery = '' }) {
           filteredProducts = filteredProducts.filter(p => p.originalPrice);
         }
 
-        // Filtrar por tallas
         if (selectedSizes.length > 0) {
           filteredProducts = filteredProducts.filter(p => {
             if (!p.sizes) return false;
@@ -196,7 +198,6 @@ export default function ProductGrid({ searchQuery = '' }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 lg:px-8 py-8">
-      {/* Section title */}
       <div className="text-center mb-8">
         <h2 className="text-2xl lg:text-3xl font-semibold tracking-wide mb-2">
           {searchQuery ? `Resultados para "${searchQuery}"` : 'NUESTROS PRODUCTOS'}
@@ -206,7 +207,6 @@ export default function ProductGrid({ searchQuery = '' }) {
         </p>
       </div>
 
-      {/* Categories */}
       <div className="flex flex-wrap justify-center gap-2 mb-6">
         {categories.map((category) => (
           <button
@@ -223,9 +223,7 @@ export default function ProductGrid({ searchQuery = '' }) {
         ))}
       </div>
 
-      {/* Filters bar */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-        {/* Filter button */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -255,9 +253,7 @@ export default function ProductGrid({ searchQuery = '' }) {
           )}
         </div>
 
-        {/* Sort & View */}
         <div className="flex items-center gap-4">
-          {/* Sort */}
           <div className="relative">
             <select
               value={sortBy}
@@ -273,7 +269,6 @@ export default function ProductGrid({ searchQuery = '' }) {
             <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
           </div>
 
-          {/* View mode */}
           <div className="flex gap-1 bg-gray-100 p-1">
             <button
               onClick={() => setViewMode('grid')}
@@ -295,11 +290,9 @@ export default function ProductGrid({ searchQuery = '' }) {
         </div>
       </div>
 
-      {/* Filter panel */}
       {showFilters && (
         <div className="mb-6 bg-white border border-gray-200 rounded-lg p-5 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Precio */}
             <div>
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <span className="w-1 h-4 bg-naf-black"></span>
@@ -326,7 +319,6 @@ export default function ProductGrid({ searchQuery = '' }) {
               </div>
             </div>
 
-            {/* Género */}
             <div>
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <span className="w-1 h-4 bg-naf-black"></span>
@@ -349,7 +341,6 @@ export default function ProductGrid({ searchQuery = '' }) {
               </div>
             </div>
 
-            {/* Talla */}
             <div>
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <span className="w-1 h-4 bg-naf-black"></span>
@@ -372,7 +363,6 @@ export default function ProductGrid({ searchQuery = '' }) {
               </div>
             </div>
 
-            {/* Color */}
             <div>
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <span className="w-1 h-4 bg-naf-black"></span>
@@ -398,7 +388,6 @@ export default function ProductGrid({ searchQuery = '' }) {
                 ))}
               </div>
 
-              {/* Solo ofertas */}
               <div className="mt-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -415,7 +404,6 @@ export default function ProductGrid({ searchQuery = '' }) {
         </div>
       )}
 
-      {/* Loading state */}
       {loading && (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="w-8 h-8 animate-spin text-naf-black" />
@@ -423,7 +411,6 @@ export default function ProductGrid({ searchQuery = '' }) {
         </div>
       )}
 
-      {/* Error state */}
       {error && (
         <div className="text-center py-16">
           <p className="text-red-500 mb-4">{error}</p>
@@ -436,7 +423,6 @@ export default function ProductGrid({ searchQuery = '' }) {
         </div>
       )}
 
-      {/* Products grid */}
       {!loading && !error && (
         <div
           className={
@@ -457,7 +443,6 @@ export default function ProductGrid({ searchQuery = '' }) {
         </div>
       )}
 
-      {/* Empty state */}
       {!loading && !error && products.length === 0 && (
         <div className="text-center py-16">
           <p className="text-naf-gray mb-4">

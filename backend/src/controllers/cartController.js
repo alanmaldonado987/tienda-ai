@@ -16,7 +16,7 @@ exports.getCart = async (req, res) => {
     console.error('Error al obtener carrito:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al obtener carrito'
+      message: error.message
     });
   }
 };
@@ -47,7 +47,7 @@ exports.addToCart = async (req, res) => {
                    error.message.includes('stock') ? 400 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al agregar al carrito'
+      message: error.message
     });
   }
 };
@@ -77,7 +77,7 @@ exports.updateCartItem = async (req, res) => {
     const status = error.message.includes('inválida') || error.message.includes('stock') ? 400 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al actualizar carrito'
+      message: error.message
     });
   }
 };
@@ -107,7 +107,7 @@ exports.removeFromCart = async (req, res) => {
     const status = error.message.includes('no encontrado') ? 404 : 500;
     res.status(status).json({
       success: false,
-      message: error.message || 'Error al quitar del carrito'
+      message: error.message
     });
   }
 };
@@ -129,7 +129,7 @@ exports.clearCart = async (req, res) => {
     console.error('Error al limpiar carrito:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Error al limpiar carrito'
+      message: error.message
     });
   }
 };

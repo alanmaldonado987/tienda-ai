@@ -3,28 +3,24 @@
  */
 module.exports = {
   port: process.env.PORT || 3001,
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv: process.env.NODE_ENV,
   
-  // JWT
   jwt: {
-    secret: process.env.JWT_SECRET || 'tu-tienda-secret-key-2026',
+    secret: process.env.JWT_SECRET,
     expiresIn: '7d'
   },
 
-  // CORS
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
+    origin: process.env.CORS_ORIGIN
   },
 
-  // Gemini AI
   geminiApiKey: process.env.GEMINI_API_KEY,
 
-  // Base de datos (para futuro uso)
   database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    name: process.env.DB_NAME || 'tutienda',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    name: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
   }
 };

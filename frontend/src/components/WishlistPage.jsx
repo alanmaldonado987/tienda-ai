@@ -7,6 +7,14 @@ export default function WishlistPage() {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
 
+  // Helper para obtener la primera imagen
+  const getProductImage = (product) => {
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      return product.images[0];
+    }
+    return product.image || 'https://via.placeholder.com/400x533?text=No+Image';
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -70,7 +78,7 @@ export default function WishlistPage() {
               <Link to={`/product/${product.id}`}>
                 <div className="aspect-[3/4] bg-naf-light-gray overflow-hidden">
                   <img
-                    src={product.image}
+                    src={getProductImage(product)}
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />

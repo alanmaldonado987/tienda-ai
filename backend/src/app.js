@@ -21,6 +21,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminUserRoutes = require('./routes/adminUserRoutes');
 const sequelize = require('./config/database');
 const Product = require('./models/Product');
 const SystemConfig = require('./models/SystemConfig');
@@ -64,6 +65,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin/users', adminUserRoutes);
 
 app.get('/api/direct-test', (req, res) => {
   res.json({ message: 'Direct test works!' });

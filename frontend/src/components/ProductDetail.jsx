@@ -10,7 +10,9 @@ export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -23,13 +25,31 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       try {
         const response = await productsAPI.getById(id);
-        setProduct(response.data.data);
-        // Set default selections
-        if (response.data.data.colors?.length) {
-          setSelectedColor(response.data.data.colors[0]);
+        const productData = response.data.data;
+        
+        // Normalizar imágenes: asegurar que sea array con al menos una imagen
+        if (productData.images && Array.isArray(productData.images) && productData.images.length > 0) {
+          // Ya tiene imágenes, verificar que no tenga undefined
+          productData.images = productData.images.filter(img => img);
         }
-        if (response.data.data.sizes?.length) {
-          setSelectedSize(response.data.data.sizes[0]);
+        
+        // Si no hay images o está vacío, usar image (legacy) o placeholder
+        if (!productData.images || productData.images.length === 0) {
+          if (productData.image) {
+            productData.images = [productData.image];
+          } else {
+            productData.images = ['https://via.placeholder.com/800x1000?text=No+Image'];
+          }
+        }
+        
+        setProduct(productData);
+        
+        // Set default selections
+        if (productData.colors?.length) {
+          setSelectedColor(productData.colors[0]);
+        }
+        if (productData.sizes?.length) {
+          setSelectedSize(productData.sizes[0]);
         }
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -68,10 +88,18 @@ export default function ProductDetail() {
     triggerFlyingProduct({
       startX: rect.left + rect.width / 2,
       startY: rect.top + rect.height / 2,
-      image: product.image,
+      image: product.images[selectedImageIndex],
       name: product.name
     }, targetPosition);
     addToCart(product, selectedSize, selectedColor, quantity);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isZoomed) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPosition({ x, y });
   };
 
   const handleToggleWishlist = () => {
@@ -99,7 +127,6 @@ export default function ProductDetail() {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <div className="mb-6">
         <Link to="/" className="flex items-center gap-2 text-sm text-gray-500 hover:text-naf-black transition-colors">
           <ArrowLeft className="w-4 h-4" />
@@ -108,21 +135,60 @@ export default function ProductDetail() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Imagenes */}
         <div className="space-y-4">
-          {/* Imagen principal */}
-          <div className="aspect-[3/4] bg-naf-light-gray overflow-hidden">
+          <div 
+            className="relative aspect-[3/4] bg-naf-light-gray overflow-hidden cursor-zoom-in"
+            onMouseEnter={() => setIsZoomed(true)}
+            onMouseLeave={() => setIsZoomed(false)}
+            onMouseMove={handleMouseMove}
+            onClick={() => setIsZoomed(!isZoomed)}
+          >
             <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover"
+              src={product.images[selectedImageIndex]}
+              alt={`${product.name} - Imagen ${selectedImageIndex + 1}`}
+              className={`w-full h-full object-cover transition-transform duration-300 ${
+                isZoomed ? 'scale-150' : 'scale-100'
+              }`}
+              style={
+                isZoomed
+                  ? {
+                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
+                    }
+                  : {}
+              }
             />
+            {product.images.length > 1 && (
+              <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 text-xs flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {selectedImageIndex + 1}/{product.images.length}
+              </div>
+            )}
           </div>
+          
+          {product.images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImageIndex(idx)}
+                  className={`relative w-20 h-24 flex-shrink-0 overflow-hidden border-2 transition-all ${
+                    selectedImageIndex === idx ? 'border-naf-black' : 'border-transparent hover:border-gray-300'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Miniatura ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Info del producto */}
         <div className="space-y-6">
-          {/* Titulo y precio */}
           <div>
             {product.tag && (
               <span className="inline-block bg-naf-black text-white text-xs px-3 py-1 tracking-wider mb-3">
@@ -145,7 +211,6 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Colores */}
           {product.colors && product.colors.length > 0 && (
             <div>
               <p className="text-sm font-medium mb-2">Color: <span className="font-normal text-gray-600">{selectedColor}</span></p>
@@ -164,7 +229,6 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {/* Tallas */}
           {product.sizes && product.sizes.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -195,7 +259,6 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {/* Cantidad */}
           <div>
             <p className="text-sm font-medium mb-2">Cantidad:</p>
             <div className="flex items-center gap-3">
@@ -215,7 +278,6 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Botones */}
           <div className="flex gap-3">
             <button
               onClick={handleAddToCart}
@@ -234,7 +296,6 @@ export default function ProductDetail() {
             </button>
           </div>
 
-          {/* Beneficios */}
           <div className="border-t pt-6 space-y-3">
             <div className="flex items-center gap-3 text-sm text-gray-600">
               <Truck className="w-5 h-5" />
@@ -250,7 +311,6 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Descripción */}
           {product.description && (
             <div className="border-t pt-6">
               <h3 className="text-sm font-medium mb-2">Descripción</h3>
@@ -260,7 +320,6 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Size Guide Modal */}
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
     </div>
   );

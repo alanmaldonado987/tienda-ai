@@ -3,6 +3,18 @@ import { productsAPI } from '../services/api';
 
 const ProductContext = createContext();
 
+// Función para normalizar productos (asegurar campo images)
+const normalizeProducts = (products) => {
+  return products.map(product => ({
+    ...product,
+    images: product.images && Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : ['https://via.placeholder.com/400x533?text=No+Image']
+  }));
+};
+
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +25,7 @@ export function ProductProvider({ children }) {
     setError(null);
     try {
       const response = await productsAPI.getAll(filters);
-      setProducts(response.data.data);
+      setProducts(normalizeProducts(response.data.data));
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar productos');
     } finally {
@@ -26,7 +38,7 @@ export function ProductProvider({ children }) {
     setError(null);
     try {
       const response = await productsAPI.getByCategory(category);
-      setProducts(response.data.data);
+      setProducts(normalizeProducts(response.data.data));
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar productos');
     } finally {
