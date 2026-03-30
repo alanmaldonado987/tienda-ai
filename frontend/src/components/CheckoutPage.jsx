@@ -19,7 +19,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from './Toast';
-import { ordersAPI } from '../services/api';
+import { ordersAPI, paymentAPI } from '../services/api';
 
 const STEPS = [
   { id: 1, name: 'Carrito' },
@@ -38,9 +38,9 @@ const COLOMBIA_DEPARTMENTS = [
 ];
 
 const PAYMENT_METHODS = [
+  { id: 'mercadopago', name: 'MercadoPago', description: 'Tarjeta, PSE, efectivo - Pago seguro e instantáneo' },
   { id: 'cash', name: 'Pago contra entrega', description: 'Paga cuando recibas' },
-  { id: 'transfer', name: 'Transferencia bancaria', description: 'Te enviamos datos' },
-  { id: 'card', name: 'Tarjeta de crédito/débito', description: 'Pago seguro' }
+  { id: 'transfer', name: 'Transferencia bancaria', description: 'Te enviamos datos' }
 ];
 
 export default function CheckoutPage() {
@@ -124,12 +124,57 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
-      const response = await ordersAPI.create({
+      // Preparar datos de la orden
+      const orderData = {
         ...shippingData,
         paymentMethod
-      });
+      };
+
+      // Primero crear la orden en el backend
+      const orderResponse = await ordersAPI.create(orderData);
+      const order = orderResponse.data.data;
       
-      setOrderCreated(response.data.data);
+      // Si es MercadoPago, crear preferencia y redireccionar
+      if (paymentMethod === 'mercadopago') {
+        // Preparar items para MercadoPago
+        const mpItems = cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          description: item.selectedColor && item.selectedSize 
+            ? `Color: ${item.selectedColor}, Talla: ${item.selectedSize}`
+            : item.description || '',
+          quantity: item.quantity,
+          price: item.price,
+          productId: item.id
+        }));
+
+        // Crear preferencia de pago
+        const prefResponse = await paymentAPI.createPreference({
+          orderId: order.id,
+          items: mpItems,
+          payer: {
+            name: shippingData.shippingName,
+            email: shippingData.shippingEmail
+          },
+          totalAmount: orderTotal
+        });
+
+        const { initPoint, sandboxInitPoint } = prefResponse.data.data;
+        
+        // Usar sandbox en desarrollo, producción en prod
+        const isDev = import.meta.env.DEV || !import.meta.env.PROD;
+        const paymentUrl = isDev ? sandboxInitPoint : initPoint;
+
+        if (paymentUrl) {
+          // Limpiar carrito y redireccionar a MercadoPago
+          await clearCart();
+          window.location.href = paymentUrl;
+          return;
+        }
+      }
+
+      // Para otros métodos (cash, transfer), mostrar confirmación
+      setOrderCreated(order);
       await clearCart();
       setDirection(1);
       setCurrentStep(4);

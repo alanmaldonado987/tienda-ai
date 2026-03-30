@@ -92,6 +92,25 @@ const Order = sequelize.define('Order', {
   paymentId: {
     type: DataTypes.STRING
   },
+  // MercadoPago fields
+  mpPreferenceId: {
+    type: DataTypes.STRING
+  },
+  mpPaymentId: {
+    type: DataTypes.STRING
+  },
+  mpStatus: {
+    type: DataTypes.STRING
+  },
+  mpStatusDetail: {
+    type: DataTypes.STRING
+  },
+  mpPaymentMethod: {
+    type: DataTypes.STRING
+  },
+  paidAt: {
+    type: DataTypes.DATE
+  },
   // Tracking
   trackingNumber: {
     type: DataTypes.STRING

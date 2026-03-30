@@ -153,6 +153,12 @@ export const ordersAPI = {
   cancel: (id, reason) => api.delete(`/orders/${id}`, { data: { reason } })
 };
 
+export const paymentAPI = {
+  createPreference: (data) => api.post('/payments/create-preference', data),
+  getStatus: (orderId) => api.get(`/payments/order/${orderId}`),
+  verify: (orderId) => api.post(`/payments/verify/${orderId}`)
+};
+
 export const configAPI = {
   getAll: () => api.get('/config'),
   getValue: (key) => api.get(`/config/${key}`)
